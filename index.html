@@ -6,7 +6,7 @@
 	<meta charset="utf-8">
   <link href="app.less" type="text/css" rel="stylesheet/less">
 </head>
-<body>
+<body ng-app>
 
   <!-- Livereload script for development only (stripped during dist build) -->
   <script src="http://localhost:35729/livereload.js" data-concat="false"></script>
@@ -30,12 +30,19 @@
   <script src="app.js"></script>
   <script src="AirMap/AirMap.js"></script>
   <script src="KioskMain/KioskMain.js"></script>
+  <script src="service/ActivePluginRegisterService.js"></script>
   <!-- Add New Component JS Above -->
 
-  <div>
+  <div ng-controller="KioskMain">
     <div id="content" class="container">
       <div class="row">
         <div ng-view>
+          Kiosk Main...
+
+          The following modules have located appropriate datastreams in the selected open data repository
+          <ul>
+            <li></li>
+          </ul>
         </div>
       </div>
     </div>
