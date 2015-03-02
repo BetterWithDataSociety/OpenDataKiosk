@@ -22,6 +22,14 @@ After getting your environment up (usually)
 
 npm install -g yo bower grunt-cli gulp
 
+and checking out the project with
+
+git clone git@github.com:BetterWithDataSociety/OpenDataKiosk.git
+
+Install dependencies using
+
+npm install
+
 Use
 
 grunt serve
