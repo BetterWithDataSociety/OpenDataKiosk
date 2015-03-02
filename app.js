@@ -1,4 +1,4 @@
-angular.module('OpenDataKiosk', ['ui.bootstrap', 'ui.utils', 'ngRoute', 'ngAnimate', 'AirMap']);
+angular.module('OpenDataKiosk', ['ui.bootstrap', 'ui.utils', 'ngRoute', 'ngAnimate', 'AirMap', 'KioskMain']);
 
 angular.module('OpenDataKiosk').config(function($routeProvider) {
 

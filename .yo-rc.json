@@ -23,6 +23,10 @@
       {
         "name": "AirMap",
         "file": "AirMap/AirMap.js"
+      },
+      {
+        "name": "KioskMain",
+        "file": "KioskMain/KioskMain.js"
       }
     ]
   }
