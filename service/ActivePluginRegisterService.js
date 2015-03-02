@@ -1,6 +1,8 @@
 angular.module('OpenDataKiosk').factory('ActivePluginRegisterService',function() {
 
-	var ActivePluginRegisterService = {};
+  var ActivePluginRegisterService = {};
+  
+  ActivePluginRegisterService.register=[]
 
-	return ActivePluginRegisterService;
+  return ActivePluginRegisterService;
 });

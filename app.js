@@ -21,3 +21,10 @@ angular.module('OpenDataKiosk').run(function($rootScope) {
     };
 
 });
+
+
+angular.module('OpenDataKiosk')
+  .controller('KioskController', function ($scope) {
+    $scope.greeting="Hello";
+  });
+
