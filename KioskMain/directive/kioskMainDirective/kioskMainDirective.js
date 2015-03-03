@@ -3,11 +3,11 @@ angular.module('KioskMain').directive('kioskMainDirective', ['ActivePluginRegist
 		restrict: 'E',
 		replace: true,
 		scope: {
+                  'plugins':'=',
+                  'test':'='
 		},
 		templateUrl: 'KioskMain/directive/kioskMainDirective/kioskMainDirective.html',
 		link: function(scope, element, attrs, fn) {
-
-
 		}
 	};
 }]);

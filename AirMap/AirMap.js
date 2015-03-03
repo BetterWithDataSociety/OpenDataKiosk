@@ -8,6 +8,5 @@ angular.module('AirMap').config(function($routeProvider) {
 });
 
 angular.module('AirMap').run(function(ActivePluginRegisterService) {
-    ActivePluginRegisterService.register.push({module:'AirMap'});
-
+    // ActivePluginRegisterService.register['environment']=['AirMap'];
 });
