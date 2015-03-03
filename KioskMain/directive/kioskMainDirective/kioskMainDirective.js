@@ -1,4 +1,4 @@
-angular.module('KioskMain').directive('kioskMainDirective', function() {
+angular.module('KioskMain').directive('kioskMainDirective', ['ActivePluginRegisterService',function() {
 	return {
 		restrict: 'E',
 		replace: true,
@@ -10,4 +10,4 @@ angular.module('KioskMain').directive('kioskMainDirective', function() {
 
 		}
 	};
-});
+}]);
