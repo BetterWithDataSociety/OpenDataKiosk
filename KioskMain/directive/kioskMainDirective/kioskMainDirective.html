@@ -6,7 +6,7 @@
     </tab>
 
     <tab ng-repeat="category in plugins" heading="{{category.category}}" active="tab.active" disabled="tab.disabled">
-      <category-directive></category-directive>
+      <category-directive plugins="category.plugins"></category-directive>
     </tab>
   </tabset>
 

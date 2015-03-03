@@ -3,7 +3,7 @@ angular.module('KioskMain').directive('categoryDirective', function() {
 		restrict: 'E',
 		replace: true,
 		scope: {
-
+                  plugins:'='
 		},
 		templateUrl: 'KioskMain/directive/categoryDirective/categoryDirective.html',
 		link: function(scope, element, attrs, fn) {

@@ -1,4 +1,14 @@
 <div>
-Category
+Category Directive Contents
+
+  <tabset>
+    <tab heading="About">
+      Info about the category<br/>
+    </tab>
+
+    <tab ng-repeat="plugin in plugins" heading="{{plugin.name}}" active="tab.active" disabled="tab.disabled">
+       Content from the plugin goes here
+    </tab>
+  </tabset>
 
 </div>

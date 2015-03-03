@@ -7,7 +7,7 @@ angular.module('OpenDataKiosk').factory('ActivePluginRegisterService',function()
   //                                        { category:'test3', plugins:['someTest31','someTest32']} ];
   ActivePluginRegisterService.register=[];
 
-  ActivePluginRegisterService.registerPlugin = function(category, name) {
+  ActivePluginRegisterService.registerPlugin = function(category, pluginName, config) {
     var selected_category = null;
     for (var i=0, iLen=ActivePluginRegisterService.register.length; i<iLen; i++) {
       if (ActivePluginRegisterService.register[i].category == category)
@@ -15,11 +15,11 @@ angular.module('OpenDataKiosk').factory('ActivePluginRegisterService',function()
     }
 
     if ( selected_category == null ) {
-      selected_category = { category: category, plugins:[name] };
+      selected_category = { category: category, plugins:[{name:pluginName, config:config}] };
       ActivePluginRegisterService.register.push(selected_category);
     }
     else {
-      selected_category.plugins.push(name);
+      selected_category.plugins.push({name:pluginName, config:config});
     }
 
   };
