@@ -1,8 +1,12 @@
 <div>
-Here are the tabs for the doodah..
-<ul>
-  <li>First</li>
-  <li ng-repeat="category in plugins">cat:{{category.category}}</li>
-  <li ng-repeat="category in test">cat:{{category.category}}</li>
-</ul>
+
+  <tabset>
+    <tab heading="About">
+      BWD Open Data Kiosk<br/>
+    </tab>
+
+    <tab ng-repeat="category in plugins" heading="{{category.category}}" active="tab.active" disabled="tab.disabled">
+    </tab>
+  </tabset>
+
 </div>
