@@ -30,25 +30,16 @@
   <script src="app.js"></script>
   <script src="AirMap/AirMap.js"></script>
   <script src="KioskMain/KioskMain.js"></script>
+  <script src="KioskMain/KioskMainController.js"></script>
   <script src="service/ActivePluginRegisterService.js"></script>
   <script src="KioskMain/directive/kioskMainDirective/kioskMainDirective.js"></script>
   <!-- Add New Component JS Above -->
 
   kioskMainDirective::<br/>
-  <kiosk-main-directive></kiosk-main-directive>
-
-  Rest<br/>
-  One
-  <div ng-controller="KioskController">
-    Two
-    <div id="content" class="container">
-      Three
-      <div class="row">
-        Four {{greeting}}
-      </div>
-    </div>
+  <div ng-controller="kioskMainController">
+    kmscope greeting: {{ greeting }} <br/>
+    <kiosk-main-directive></kiosk-main-directive>
   </div>
-
 
 </body>
 </html>
