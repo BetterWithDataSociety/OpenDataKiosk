@@ -1,5 +1,6 @@
 angular.module('KioskMain')
-  .controller('kioskMainController', function ($scope) {
+  .controller('kioskMainController', ['$scope','ActivePluginRegisterService',function ($scope, pluginRegister) {
     $scope.greeting="KMHello";
-  });
+    $scope.plugins = pluginRegister.register;
+  }]);
 
