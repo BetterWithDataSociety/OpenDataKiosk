@@ -1,10 +1,9 @@
-angular.module('KioskMain').directive('kioskMainDirective', ['ActivePluginRegisterService',function() {
+angular.module('KioskMain').directive('kioskMainDirective', [function($scope) {
 	return {
 		restrict: 'E',
 		replace: true,
 		scope: {
-                  'plugins':'=',
-                  'test':'='
+                  'plugins':'='
 		},
 		templateUrl: 'KioskMain/directive/kioskMainDirective/kioskMainDirective.html',
 		link: function(scope, element, attrs, fn) {

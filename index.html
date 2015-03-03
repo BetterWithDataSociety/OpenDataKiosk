@@ -37,16 +37,7 @@
 
   kioskMainDirective::<br/>
   <div ng-controller="kioskMainController">
-    kmscope greeting: {{ greeting }} <br/>
-
-    <ul>
-      <li>First</li>
-      <li ng-repeat="category in plugins">plugin:{{category.category}}</li>
-    </ul>
-
-    Now for directive <br/>
-
-    <kiosk-main-directive></kiosk-main-directive>
+    <kiosk-main-directive plugins="plugins"></kiosk-main-directive>
   </div>
 
 </body>
