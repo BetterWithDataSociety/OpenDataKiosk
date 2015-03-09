@@ -1,3 +1,4 @@
+
 # open-data-kiosk
 
 This project is generated with [yo angular generator](https://github.com/yeoman/generator-angular)
@@ -8,6 +9,14 @@ Specifically, the project uses https://www.npmjs.com/package/generator-cg-angula
 ## Build & development
 
 Run `grunt` for building and `grunt serve` for preview.
+
+
+## Adding a new plugin
+
+nvm use v0.12.0
+yo cg-angular:partial -nameOfView, eg airMap-
+vi index.html 
+
 
 ## Testing
 
