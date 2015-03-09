@@ -50,3 +50,5 @@ for example
 yo cg-angular:module AirMap
 
 
+
+https://docs.angularjs.org/tutorial/step_07
