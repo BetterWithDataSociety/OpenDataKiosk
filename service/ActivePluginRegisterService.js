@@ -10,8 +10,9 @@ angular.module('OpenDataKiosk').factory('ActivePluginRegisterService',function()
   ActivePluginRegisterService.registerPlugin = function(category, pluginName, config) {
     var selected_category = null;
     for (var i=0, iLen=ActivePluginRegisterService.register.length; i<iLen; i++) {
-      if (ActivePluginRegisterService.register[i].category == category)
+      if (ActivePluginRegisterService.register[i].category === category) {
         selected_category =  ActivePluginRegisterService.register[i];
+      }
     }
 
     if ( selected_category == null ) {
