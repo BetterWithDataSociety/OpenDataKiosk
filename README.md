@@ -61,3 +61,11 @@ yo cg-angular:module AirMap
 
 
 https://docs.angularjs.org/tutorial/step_07
+
+
+
+
+# To Deploy
+
+grunt build
+grunt buildcontrol:pages
