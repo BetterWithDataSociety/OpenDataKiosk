@@ -69,3 +69,5 @@ https://docs.angularjs.org/tutorial/step_07
 
 grunt build
 grunt buildcontrol:pages
+
+For DEVELOPMENT testing, this will publish the JS app to https://betterwithdatasociety.github.io/OpenDataKiosk/
