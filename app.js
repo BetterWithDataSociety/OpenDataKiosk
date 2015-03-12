@@ -4,7 +4,7 @@ angular.module('OpenDataKiosk').config(function($routeProvider) {
 
     /* Add New Routes Above */
     // $routeProvider.otherwise({redirectTo:'/home'});
-    $routeProvider.otherwise({ templateUrl: 'home.html' })
+    $routeProvider.otherwise({ templateUrl: 'home.html' });
 
     // redirectTo:'/home'});
 
