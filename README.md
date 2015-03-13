@@ -65,7 +65,13 @@ https://docs.angularjs.org/tutorial/step_07
 
 
 
-
 For deployment::
 
 http://blogs.wcode.org/2013/09/howto-boot-your-raspberry-pi-into-a-fullscreen-browser-kiosk/
+
+# To Deploy
+
+grunt build
+grunt buildcontrol:pages
+
+For DEVELOPMENT testing, this will publish the JS app to https://betterwithdatasociety.github.io/OpenDataKiosk/

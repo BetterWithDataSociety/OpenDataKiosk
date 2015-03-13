@@ -197,6 +197,26 @@ module.exports = function (grunt) {
       during_watch: {
         browsers: ['PhantomJS']
       },
+    },
+    buildcontrol: {
+     options: {
+       dir: 'dist',
+       commit: true,
+       push: true,
+       message: 'Built %sourceName% from commit %sourceCommit% on branch %sourceBranch%'
+     },
+     pages: {
+       options: {
+         remote: 'git@github.com:BetterWithDataSociety/OpenDataKiosk.git',
+         branch: 'gh-pages'
+       }
+     },
+     local: {
+       options: {
+         remote: '../',
+         branch: 'build'
+       }
+     }
     }
   });
 
