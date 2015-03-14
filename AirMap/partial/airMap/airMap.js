@@ -74,3 +74,38 @@ angular.module('AirMap').controller('AirmapCtrl',function($scope){
   map.invalidateSize();
 
 });
+
+
+function updateHeatmapLayer(uri,heatmaplayer) {
+
+  testData.data = [{lat:0,lng:0,count:0}];
+  heatmapLayer.setData(testData);
+  testData.data = []
+
+  // Remove all existing markers
+  for ( var i = 0; i < markers.length; i++ ) {
+    map.removeLayer(markers[i]);
+  }
+  markers = [];
+
+  // Here is the sparql query to get all latest NO2 readings
+  $.ajax({
+        url: "http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fsensor%2C+%3Flat%2C+%3Flong%2C+%3Ftimestamp%2C+%3FobservationValue%0D%0Awhere+%7B%0D%0A++++%3Fobservation+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23hasValue%3E+%3FobservationValue+.%0D%0A++++%3Fobservation+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23endTime%3E+%3Ftimestamp+.%0D%0A++++%3Fobservation+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23sensor%3E+%3Fsensor+.%0D%0A++++%3Fsensor+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23MeasurementProperty%3E+"+encodeURIComponent('<'+uri+'>')+".%0D%0A++++%3Fsensor+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flong+.%0D%0A++++%3Fsensor+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A%0D%0A++++%7B%0D%0A++++++++select+%28max%28%3Fr%29+AS+%3Fobservation%29%0D%0A++++++++where+%7B%0D%0A++++++++++++%3Fr+a+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23ObservationValue%3E+.%0D%0A++++++++++++%3Fr+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23sensor%3E+%3Fsensor+.%0D%0A++++++++++++%3Fr+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23endTime%3E+%3Fts+.++%0D%0A++++++++++++FILTER+%28+xsd%3AdateTime%28%3Fts%29+%3E+xsd%3AdateTime%28%272015-01-01+00%3A00%3A00%27%29+%29%0D%0A++++++++%7D%0D%0A++++++++GROUP+BY+%3Fsensor%0D%0A++++%7D%0D%0A%0D%0A++++%0D%0A%7D&format=json&timeout=0&debug=on",
+  }).done(function(data) {
+
+    for ( var i = 0; i < data.results.bindings.length; i++ ) {
+      testData.data.push({lat:data.results.bindings[i].lat.value,
+                          lng:data.results.bindings[i].long.value,
+                          count:data.results.bindings[i].observationValue.value});
+
+      // L.marker( [data.results.bindings[i].lat.value,data.results.bindings[i].long.value],{icon: L.divIcon({
+      //   className: 'count-icon', html: data.results.bindings[i].observationValue.value, iconSize: [40, 40] })}).addTo(map);
+      markers.push (L.marker( [data.results.bindings[i].lat.value,data.results.bindings[i].long.value])
+             .bindPopup( data.results.bindings[i].observationValue.value )
+             .addTo(map));
+    }
+
+    // console.log("%o",testData.data);
+    heatmapLayer.setData(testData);
+  });
+}
