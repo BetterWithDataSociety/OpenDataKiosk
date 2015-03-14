@@ -1,41 +1,29 @@
 angular.module('AirMap').controller('AirmapCtrl',function($scope){
 
-  var heatmapLayer = null;
   var map = null;
 
-  var cfg = {
-          // radius should be small ONLY if scaleRadius is true (or small radius is intended)
-          "radius": 0.05,
-          "maxOpacity": .8, 
-          // scales the radius based on map zoom
-          "scaleRadius": true, 
-          // if set to false the heatmap uses the global maximum for colorization
-          // if activated: uses the data maximum within the current map boundaries 
-          //   (there will always be a red spot with useLocalExtremas true)
-          "useLocalExtrema": true,
-          // which field name in your data represents the latitude - default "lat"
-          latField: 'lat',
-          // which field name in your data represents the longitude - default "lng"
-          lngField: 'lng',
-          // which field name in your data represents the data value - default "value"
-          valueField: 'count'
-  };
-
-  var baseLayer = L.tileLayer(
-          'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
-            maxZoom: 18
-          }
-        );
-
-
-  heatmapLayer = new HeatmapOverlay(cfg);
+  var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+  var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+  var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 12, attribution: osmAttrib});		
 
 
   map = new L.Map('map-canvas', {
-          center: new L.LatLng(53.383611, -1.466944),
-          zoom: 12,
-          layers: [baseLayer, heatmapLayer]
+    center: new L.LatLng(53.383611, -1.466944),
+    zoom: 12
   });
+
+  var popup = L.popup();
+
+  function onMapClick(e) {
+    popup
+        .setLatLng(e.latlng)
+        .setContent("You clicked the map at " + e.latlng.toString())
+        .openOn(map);
+  }
+
+  map.on('click', onMapClick);
+  map.addLayer(osm);
+
+  map.invalidateSize();
 
 });
