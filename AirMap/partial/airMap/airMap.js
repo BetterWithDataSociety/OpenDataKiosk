@@ -33,14 +33,16 @@ angular.module('AirMap').controller('AirmapCtrl',function($scope){
           valueField: 'count'
   };
 
-  var no2heatmap = new HeatmapOverlay(cfg);
-  var noheatmap = new HeatmapOverlay(cfg);
-  var sulfurDioxide = new HeatmapOverlay(cfg);
-  var ozone = new HeatmapOverlay(cfg);
-  var pm25 = new HeatmapOverlay(cfg);
-  var pm10 = new HeatmapOverlay(cfg);
-  var atmos = new HeatmapOverlay(cfg); // atmospheric pressure
-  var temp = new HeatmapOverlay(cfg); // outside air temperature
+  var layer_options = [
+    {id:'no2heatmap', label:'NO2', layer:new HeatmapOverlay(cfg)},
+    {id:'noheatmap', label:'NO', layer:new HeatmapOverlay(cfg)},
+    {id:'sulfurDioxide', label:'Sulfur Dioxide', layer:new HeatmapOverlay(cfg)},
+    {id:'ozone', label:'Ozone', layer:new HeatmapOverlay(cfg)},
+    {id:'pm25', label:'PM2.5', layer:new HeatmapOverlay(cfg)},
+    {id:'pm10', label:'PM10', layer:new HeatmapOverlay(cfg)},
+    {id:'atmos', label:'Atmospheric Pressure', layer:new HeatmapOverlay(cfg)},
+    {id:'temp', label:'Outside Air Temperature', layer:new HeatmapOverlay(cfg)},
+  ];
 
   // var littleton = L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.'),
   // denver    = L.marker([39.74, -104.99]).bindPopup('This is Denver, CO.'),
@@ -50,16 +52,12 @@ angular.module('AirMap').controller('AirmapCtrl',function($scope){
   // 
   
   var baseMaps = {
-    "Base": map,
-    "NO2": no2heatmap,
-    "NO": noheatmap,
-    "Sulfur Dioxide": sulfurDioxide,
-    "OZone": ozone,
-    "PM2.5": pm25,
-    "PM10": pm10,
-    "Atmospheric Pressure": atmos,
-    "Outside Air Temperature": temp
+    // "Base": map,
   };
+
+  for (var i = 0; i < layer_options.length; i++) {
+    baseMaps[layer_options[i].label] = layer_options[i].layer;
+  }
 
   var overlayMaps = {
     "Permits": permits
