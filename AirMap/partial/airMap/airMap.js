@@ -34,14 +34,14 @@ angular.module('AirMap').controller('AirmapCtrl',function($scope){
   };
 
   var layer_options = [
-    {id:'no2heatmap', label:'NO2', layer:new HeatmapOverlay(cfg)},
-    {id:'noheatmap', label:'NO', layer:new HeatmapOverlay(cfg)},
-    {id:'sulfurDioxide', label:'Sulfur Dioxide', layer:new HeatmapOverlay(cfg)},
-    {id:'ozone', label:'Ozone', layer:new HeatmapOverlay(cfg)},
-    {id:'pm25', label:'PM2.5', layer:new HeatmapOverlay(cfg)},
-    {id:'pm10', label:'PM10', layer:new HeatmapOverlay(cfg)},
-    {id:'atmos', label:'Atmospheric Pressure', layer:new HeatmapOverlay(cfg)},
-    {id:'temp', label:'Outside Air Temperature', layer:new HeatmapOverlay(cfg)},
+    {id:'no2heatmap', label:'NO2', layer:new HeatmapOverlay(cfg), uri:'http://dbpedia.org/resource/NO2'},
+    {id:'sulfurDioxide', label:'Sulfur Dioxide', layer:new HeatmapOverlay(cfg), uri:'http://dbpedia.org/resource/Sulfur_dioxide'},
+    {id:'ozone', label:'Ozone', layer:new HeatmapOverlay(cfg), uri:'http://dbpedia.org/resource/Ozone'},
+    {id:'cm', label:'Carbon Monoxide', layer:new HeatmapOverlay(cfg), uri:'http://dbpedia.org/resource/Carbon_monoxide'},
+    {id:'pm25', label:'PM2.5', layer:new HeatmapOverlay(cfg), uri:'http://dbpedia.org/resource/PM_2.5'},
+    {id:'pm10', label:'PM10', layer:new HeatmapOverlay(cfg), uri:'http://dbpedia.org/resource/PM_10'},
+    {id:'atmos', label:'Atmospheric Pressure', layer:new HeatmapOverlay(cfg), uri:'http://dbpedia.org/resource/Atmospheric_pressure'},
+    {id:'temp', label:'Outside Air Temperature', layer:new HeatmapOverlay(cfg), uri:'http://dbpedia.org/resource/Outside_air_temperature'},
   ];
 
   // var littleton = L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.'),
