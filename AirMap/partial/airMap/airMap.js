@@ -52,7 +52,7 @@ angular.module('AirMap').controller('AirmapCtrl',function($scope){
   // 
   
   var baseMaps = {
-    // "Base": map,
+    "Base Map": osm,
   };
 
   for (var i = 0; i < layer_options.length; i++) {
@@ -64,12 +64,11 @@ angular.module('AirMap').controller('AirmapCtrl',function($scope){
   };
 
 
-
   L.control.layers(baseMaps, overlayMaps).addTo(map);
 
   map.addLayer(osm);
-  map.addLayer(no2heatmap);
-  map.addLayer(noheatmap);
+  // map.addLayer(no2heatmap);
+  // map.addLayer(noheatmap);
 
   map.invalidateSize();
 
