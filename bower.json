@@ -22,6 +22,8 @@
     "moment": "~2.5",
     "less.js": "~1.6",
     "font-awesome": "~4.0",
-    "leaflet-dist": "~0.7.2"
+    "leaflet-dist": "~0.7.2",
+    "heatmap": "file:./lib/heatmap",
+    "leaflet-heatmap": "file:./lib/leaflet-heatmap"
   }
 }
