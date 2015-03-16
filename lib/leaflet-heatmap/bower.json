@@ -16,6 +16,7 @@
     "tests"
   ],
   "dependencies": {
-        "local-module": "../leaflet/"
+    "leaflet-dist": "~0.7.2",
+    "heatmap": "file:./lib/heatmap"
   }
 }
