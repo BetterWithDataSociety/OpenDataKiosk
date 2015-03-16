@@ -20,7 +20,7 @@ angular.module('AirMap').controller('AirmapCtrl',function($scope){
       console.log("set data on %o to %o",heatmaplayer,layerData);
       heatmaplayer.setData(layerData);
 
-      if ( 1== 2 ) {
+      if ( 1=== 2 ) {
         layerData.data = [];
         if ( layerData.markers == null ) {
           layerData.markers = [];
@@ -114,7 +114,7 @@ angular.module('AirMap').controller('AirmapCtrl',function($scope){
     // updateHeatmapLayer(layer_options[i].uri, layer_options[i].layer, layer_options[i].data);
     // layer_options[i].data.data = [{lat:53.412365,lng:-1.398938,count:4}];
     var hml = new HeatmapOverlay(cfg);
-    layer_options[i].layer = hml
+    layer_options[i].layer = hml;
     // console.log("Set data to %o",layer_options[i].data);
     // hml.setData(layer_options[i].data);
     baseMaps[layer_options[i].label] = hml;
@@ -136,7 +136,7 @@ angular.module('AirMap').controller('AirmapCtrl',function($scope){
   // added to a map
   var testData = {
           max: '40',
-          data: [{lat:'53.383611', lng:'-1.466944', count:'35'}]
+          data: [{lat:'53.383611', lng:'-1.466944', count:'35'},{lat:'53.412365',lng:'-1.398938',count:'14'}]
           // data: [{lat:'53.383611', lng:'-1.466944', count:35}]
         };
 
