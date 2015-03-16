@@ -89,13 +89,13 @@ angular.module('AirMap').controller('AirmapCtrl',function($scope){
 
   var layer_options = [
     {id:'no2heatmap', label:'NO2', uri:'http://dbpedia.org/resource/NO2', data:{}},
-    {id:'sulfurDioxide', label:'Sulfur Dioxide', uri:'http://dbpedia.org/resource/Sulfur_dioxide', data:{}},
-    {id:'ozone', label:'Ozone', uri:'http://dbpedia.org/resource/Ozone', data:{}},
-    {id:'cm', label:'Carbon Monoxide', uri:'http://dbpedia.org/resource/Carbon_monoxide', data:{}},
-    {id:'pm25', label:'PM2.5', uri:'http://dbpedia.org/resource/PM_2.5', data:{}},
-    {id:'pm10', label:'PM10', uri:'http://dbpedia.org/resource/PM_10', data:{}},
-    {id:'atmos', label:'Atmospheric Pressure', uri:'http://dbpedia.org/resource/Atmospheric_pressure', data:{}},
-    {id:'temp', label:'Outside Air Temperature', uri:'http://dbpedia.org/resource/Outside_air_temperature', data:{}},
+    // {id:'sulfurDioxide', label:'Sulfur Dioxide', uri:'http://dbpedia.org/resource/Sulfur_dioxide', data:{}},
+    // {id:'ozone', label:'Ozone', uri:'http://dbpedia.org/resource/Ozone', data:{}},
+    // {id:'cm', label:'Carbon Monoxide', uri:'http://dbpedia.org/resource/Carbon_monoxide', data:{}},
+    // {id:'pm25', label:'PM2.5', uri:'http://dbpedia.org/resource/PM_2.5', data:{}},
+    // {id:'pm10', label:'PM10', uri:'http://dbpedia.org/resource/PM_10', data:{}},
+    // {id:'atmos', label:'Atmospheric Pressure', uri:'http://dbpedia.org/resource/Atmospheric_pressure', data:{}},
+    // {id:'temp', label:'Outside Air Temperature', uri:'http://dbpedia.org/resource/Outside_air_temperature', data:{}},
   ];
 
   // var littleton = L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.'),
