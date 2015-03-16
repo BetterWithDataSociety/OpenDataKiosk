@@ -4,7 +4,7 @@ angular.module('AirMap').controller('AirmapCtrl',function($scope){
 
   var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
   var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
-  var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 12, attribution: osmAttrib});		
+  var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 18, attribution: osmAttrib});		
 
   function addDummyPin(layer, str) {
     L.marker([53.412365,-1.398938])
@@ -129,13 +129,19 @@ angular.module('AirMap').controller('AirmapCtrl',function($scope){
   L.control.layers(baseMaps, overlayMaps).addTo(map);
 
   map.addLayer(osm);
-  map.addLayer(layer_options[0].layer);
   // map.addLayer(no2heatmap);
   // map.addLayer(noheatmap);
 
   // Heatmap doesn't seem to play so nice with the layers control - can only call setData after a layer has been
   // added to a map
-  layer_options[0].layer.setData({data:[{lat:53.412365,lng:-1.398938,count:4}]});
+  var testData = {
+          max: '40',
+          data: [{lat:'53.383611', lng:'-1.466944', count:'35'}]
+          // data: [{lat:'53.383611', lng:'-1.466944', count:35}]
+        };
+
+  map.addLayer(layer_options[0].layer);
+  layer_options[0].layer.setData(testData);
 
 
 });

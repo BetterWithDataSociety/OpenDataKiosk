@@ -24,7 +24,6 @@
     "less.js": "~1.6",
     "font-awesome": "~4.0",
     "leaflet-dist": "~0.7.2",
-    "heatmap":"./lib/heatmap/heatmap.min.js",
-    "leaflet-heatmap":"./lib/leaflet-heatmap/leaflet-heatmap.js"
+    "heatmap.js-amd": "v2.0"
   }
 }
