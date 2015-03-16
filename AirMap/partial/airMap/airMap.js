@@ -18,7 +18,7 @@ angular.module('AirMap').controller('AirmapCtrl',function($scope){
   var cfg = {
           // radius should be small ONLY if scaleRadius is true (or small radius is intended)
           "radius": 0.05,
-          "maxOpacity": .8, 
+          "maxOpacity": 0.8, 
           // scales the radius based on map zoom
           "scaleRadius": true, 
           // if set to false the heatmap uses the global maximum for colorization
@@ -80,7 +80,7 @@ function updateHeatmapLayer(uri,heatmaplayer) {
 
   testData.data = [{lat:0,lng:0,count:0}];
   heatmapLayer.setData(testData);
-  testData.data = []
+  testData.data = [];
 
   // Remove all existing markers
   for ( var i = 0; i < markers.length; i++ ) {
