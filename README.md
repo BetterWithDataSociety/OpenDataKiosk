@@ -17,6 +17,7 @@ nvm use v0.12.0
 yo cg-angular:partial -nameOfView, eg airMap-
 vi index.html 
 
+## Adding a partial to a new plugin
 
 ## Testing
 
@@ -58,6 +59,7 @@ for example
 
 yo cg-angular:module AirMap
 
+yo cg-angular:partial -nameOfView, eg airMap-
 
 
 https://docs.angularjs.org/tutorial/step_07
