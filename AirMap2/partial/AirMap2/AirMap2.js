@@ -6,6 +6,8 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope){
   var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
   var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 18, attribution: osmAttrib});
 
+  $scope.markerPartial = 'AirMap2/partial/AirMap2/noSelection.html';
+
   function displayInfoFor(uri) {
     alert(uri);
     // Fetch all types for the URI - then load the partial for each type
