@@ -6,6 +6,11 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope){
   var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
   var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 18, attribution: osmAttrib});
 
+  function displayInfoFor(uri) {
+    alert(uri);
+    // Fetch all types for the URI - then load the partial for each type
+  }
+
   function update(map) {
 
     console.log("update");
@@ -21,7 +26,10 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope){
                    // .bindPopup( lbl )
                    // .addTo(this.layer);
 
-        var marker = L.marker( [data.results.bindings[i].lat.value,data.results.bindings[i].lon.value]).addTo(map);
+        var marker = L.marker( [data.results.bindings[i].lat.value,data.results.bindings[i].lon.value],
+                               {__id:data.results.bindings[i].s.value}).addTo(map);
+
+        marker.on('click', function(e) {displayInfoFor(this.options.__id);});
 
       }
     });
