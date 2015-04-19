@@ -1,6 +1,15 @@
-Diffusion Tube Partial
 {{tubeUrl}}<br/>
-{{msg}}<br/>
+
+<dl ng-repeat="row in tubeMetaData.results.bindings">
+  <dt>Label</dt>
+  <dd>{{row.label.value}}</dd>
+  <dt>Property</dt>
+  <dd>{{row.prop.value}}</dd>
+  <dt>Responsible Party</dt>
+  <dd>{{row.party.value}}</dd>
+  <dt>Methodology</dt>
+  <dd>{{row.methodology.value}}</dd>
+</dl>
 
 <table class="table table-striped">
   <tr ng-repeat="row in tubeData.results.bindings">
@@ -10,3 +19,4 @@ Diffusion Tube Partial
   </tr>
 </table>
 
+{{msg}}<br/>
