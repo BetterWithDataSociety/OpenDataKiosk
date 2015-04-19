@@ -9,8 +9,16 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope){
   $scope.markerPartial = 'AirMap2/partial/AirMap2/noSelection.html';
 
   function displayInfoFor(uri) {
-    alert(uri);
+    // alert(uri);
     // Fetch all types for the URI - then load the partial for each type
+    $scope.markerPartial = 'AirMap2/partial/AirMap2/DiffisionTube.html';
+    $scope.$apply();
+
+    alert("ok "+uri);
+  }
+
+  function clickAirMap2Marker(e) {
+    displayInfoFor(this.options.__id);
   }
 
   function update(map) {
@@ -31,7 +39,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope){
         var marker = L.marker( [data.results.bindings[i].lat.value,data.results.bindings[i].lon.value],
                                {__id:data.results.bindings[i].s.value}).addTo(map);
 
-        marker.on('click', function(e) {displayInfoFor(this.options.__id);});
+        marker.on('click', clickAirMap2Marker);
 
       }
     });
