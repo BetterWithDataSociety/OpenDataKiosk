@@ -1,4 +1,11 @@
 Diffusion Tube Partial
-{{1+2}}
-{{msg}}
+{{tubeUrl}}<br/>
+
+<table class="table table-striped">
+  <tr ng-repeat="row in tubeData.results.bindings">
+    <td>{{row.start.value}}</td>
+    <td>{{row.end.value}}</td>
+    <td>{{row.value.value}}</td>
+  </tr>
+</table>
 
