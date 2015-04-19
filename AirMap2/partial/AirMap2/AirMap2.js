@@ -14,6 +14,8 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope){
     $scope.markerPartial = 'AirMap2/partial/AirMap2/DiffisionTube.html';
     $scope.$apply();
 
+    $scope.msg='hello';
+
     alert("ok "+uri);
   }
 

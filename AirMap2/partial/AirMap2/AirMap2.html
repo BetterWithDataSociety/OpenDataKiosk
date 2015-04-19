@@ -8,8 +8,10 @@
   </div>
 
   <div id="infoPanel" class="col-md-6" >
-     infoPanel
-     <div ng-include src="markerPartial"></div>
+     {{scope}}
+     infoPanel {{markerPartial}}
+     <div ng-include src="markerPartial">
+     </div>
   </div>
 
 </div>
