@@ -27,9 +27,49 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
   function displayDiffusion(uri) {
     console.log(uri);
+
+      // Testing chart plugin
+      // $scope.chartObject = {
+       var co  = {
+        "type": "AreaChart",
+        "displayed": true,
+        "data": {
+          "cols": [
+            {
+              "id": "year",
+              "label": "Year",
+              "type": "string",
+              "p": {}
+            },
+            {
+              "id": "measurement-id",
+              "label": "NO2 Measurement",
+              "type": "number",
+              "p": {}
+            }
+          ],
+          "rows": [
+          ]
+        },
+        "options": {
+          "title": "NO2 Yearly Average",
+          "isStacked": "true",
+          "fill": 20,
+          "displayExactValues": true,
+          "vAxis": {
+            "title": "PPB",
+            "gridlines": {
+              "count": 10
+            }
+          },
+          "hAxis": {
+            "title": "Date"
+          }
+        },
+        "formatters": {}
+      };
+
     // Fetch all types for the URI - then load the partial for each type
-    $scope.markerPartial = 'AirMap2/partial/AirMap2/DiffisionTube.html';
-    $scope.$apply();
     $scope.tubeUrl = uri;
 
     $scope.tubeData = null;
@@ -53,7 +93,18 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     // Fetch all measurements
     $http.get( "http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fstart+%3Fend+%3Fvalue%0D%0Awhere+%7B%0D%0A%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23sensor%3E++%3C"+encodeURI(uri)+"%3E+.%0D%0A%3Fs+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23hasValue%3E+%3Fvalue+.%0D%0A%3Fs+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23startTime%3E+%3Fstart+.%0D%0A%3Fs+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23endTime%3E+%3Fend+.%0D%0A%7D%0D%0Aorder+by+%3Fs&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on").success( function(response) {
       $scope.tubeData = response;
+      if ( response.results.bindings != null ) {
+        for ( var i=0; i<response.results.bindings.length; i++ ) {
+          co.data.rows.push({c:[{v:response.results.bindings[i].start.value},{v:response.results.bindings[i].value.value}]})
+        }
+      }
     });
+
+    $scope.chartObject = co
+
+    $scope.markerPartial = 'AirMap2/partial/AirMap2/DiffisionTube.html';
+    $scope.$apply();
+
   }
 
   function clickAirMap2Marker(e) {
