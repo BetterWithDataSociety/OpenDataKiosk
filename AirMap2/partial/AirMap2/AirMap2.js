@@ -8,7 +8,18 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
   $scope.markerPartial = 'AirMap2/partial/AirMap2/noSelection.html';
 
-  function displayInfoFor(uri) {
+  function displayNotSelected() {
+    $scope.markerPartial = 'AirMap2/partial/AirMap2/noSelection.html';
+    $scope.$apply();
+  }
+
+  function displayPermit(uri, info) {
+    $scope.markerPartial = 'AirMap2/partial/AirMap2/Permit.html';
+    $scope.$apply();
+    $scope.info = info;
+  }
+
+  function displayDiffusion(uri) {
     console.log(uri);
     // Fetch all types for the URI - then load the partial for each type
     $scope.markerPartial = 'AirMap2/partial/AirMap2/DiffisionTube.html';
@@ -40,11 +51,29 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
   }
 
   function clickAirMap2Marker(e) {
-    displayInfoFor(this.options.__id);
+    if ( this.options.__type === 'Diffusion' ) {
+      displayDiffusion(this.options.__id);
+    }
+    else if ( this.options.__type === 'Permit' ) {
+      displayPermit(this.options.__id, this.options.__info);
+    }
+    else {
+      displayNotSelected();
+    }
   }
 
   function update(map) {
 
+    //Extend the Default marker class
+    // Some icons at http://circusnow.org/wp-content/uploads/leaflet-maps-marker-icons/
+    var RedIcon = L.Icon.Default.extend({
+      options: {
+        iconUrl: 'http://circusnow.org/wp-content/uploads/leaflet-maps-marker-icons/yellow-dot.png'
+      }
+    });
+    var redIcon = new RedIcon();
+
+    // Get diffusion tubes
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Fname+%3Flat+%3Flon%0D%0Awhere+%7B%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Fname+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0").success( function(data) {
       console.log("update 2 "+data.results.bindings.length);
       for ( var i = 0; i < data.results.bindings.length; i++ ) {   
@@ -54,11 +83,22 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
                    // .bindPopup( lbl )
                    // .addTo(this.layer);
 
-        var marker = L.marker( [data.results.bindings[i].lat.value,data.results.bindings[i].lon.value],
-                               {__id:data.results.bindings[i].s.value}).addTo(map);
-
+        var marker = L.marker( [data.results.bindings[i].lat.value, data.results.bindings[i].lon.value],
+                               {__id:data.results.bindings[i].s.value, __type:'Diffusion'}).addTo(map);
         marker.on('click', clickAirMap2Marker);
 
+      }
+    });
+
+    // Get permits
+    $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Flat+%3Flon+%3Flabel+%3FaddrLabel+%3FdocUrl+%3Ftype+%3Fsection%0D%0Awhere+%7B+%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23industrialPermit%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Flabel+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitAddressLabel%3E+%3FaddrLabel+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitDocumentURI%3E+%3FdocUrl+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitType%3E+%3Ftype+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitSection%3E+%3Fsection+.%0D%0A%7D%0D%0Aorder+by+%3Fs&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on").success( function(data) {
+      for ( var i = 0; i < data.results.bindings.length; i++ ) {   
+        var marker = L.marker( [data.results.bindings[i].lat.value, data.results.bindings[i].lon.value],
+                               {__id:data.results.bindings[i].s.value, 
+                                __type:'Permit', 
+                                icon:redIcon,
+                                __info:data.results.bindings[i]}).addTo(map);
+        marker.on('click', clickAirMap2Marker);
       }
     });
   }

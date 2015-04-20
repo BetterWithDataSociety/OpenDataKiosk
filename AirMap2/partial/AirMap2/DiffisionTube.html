@@ -1,22 +1,28 @@
-{{tubeUrl}}<br/>
-
-<dl ng-repeat="row in tubeMetaData.results.bindings">
-  <dt>Label</dt>
-  <dd>{{row.label.value}}</dd>
-  <dt>Property</dt>
-  <dd>{{row.prop.value}}</dd>
-  <dt>Responsible Party</dt>
-  <dd>{{row.party.value}}</dd>
-  <dt>Methodology</dt>
-  <dd>{{row.methodology.value}}</dd>
-</dl>
+<div ng-repeat="row in tubeMetaData.results.bindings">
+  <h3>{{row.label.value}} :: Diffusion Tube</h3>
+  <dl>
+    <dt>whats being measured</dt>
+    <dd>{{row.prop.value}}</dd>
+    <dt>Who is responsible for this diffusion tube</dt>
+    <dd>{{row.party.value}}</dd>
+    <dt>What methodology is being used</dt>
+    <dd>{{row.methodology.value}}</dd>
+  </dl>
+</div>
 
 <table class="table table-striped">
-  <tr ng-repeat="row in tubeData.results.bindings">
-    <td>{{row.start.value}}</td>
-    <td>{{row.end.value}}</td>
-    <td>{{row.value.value}}</td>
-  </tr>
+  <thead>
+    <tr>
+      <th>From</th>
+      <th>To</th>
+      <th>Annual Average</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="row in tubeData.results.bindings">
+      <td>{{row.start.value}}</td>
+      <td>{{row.end.value}}</td>
+      <td>{{row.value.value}}</td>
+    </tr>
+  </tbody>
 </table>
-
-{{msg}}<br/>
