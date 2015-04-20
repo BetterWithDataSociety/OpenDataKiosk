@@ -13,6 +13,12 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     $scope.$apply();
   }
 
+  function displayRTMonitoring(uri, info) {
+    $scope.markerPartial = 'AirMap2/partial/AirMap2/RTMonitoring.html';
+    $scope.$apply();
+    $scope.info = info;
+  }
+
   function displayPermit(uri, info) {
     $scope.markerPartial = 'AirMap2/partial/AirMap2/Permit.html';
     $scope.$apply();
@@ -57,6 +63,9 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     else if ( this.options.__type === 'Permit' ) {
       displayPermit(this.options.__id, this.options.__info);
     }
+    else if ( this.options.__type === 'RTMonitoring' ) {
+      displayRTMonitoring(this.options.__id, this.options.__info);
+    }
     else {
       displayNotSelected();
     }
@@ -68,10 +77,16 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     // Some icons at http://circusnow.org/wp-content/uploads/leaflet-maps-marker-icons/
     var RedIcon = L.Icon.Default.extend({
       options: {
+        iconUrl: 'http://circusnow.org/wp-content/uploads/leaflet-maps-marker-icons/Red-dot.png'
+      }
+    });
+    var YellowIcon = L.Icon.Default.extend({
+      options: {
         iconUrl: 'http://circusnow.org/wp-content/uploads/leaflet-maps-marker-icons/yellow-dot.png'
       }
     });
     var redIcon = new RedIcon();
+    var yellowIcon = new YellowIcon();
 
     // Get diffusion tubes
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Fname+%3Flat+%3Flon%0D%0Awhere+%7B%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Fname+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0").success( function(data) {
@@ -96,11 +111,26 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
         var marker = L.marker( [data.results.bindings[i].lat.value, data.results.bindings[i].lon.value],
                                {__id:data.results.bindings[i].s.value, 
                                 __type:'Permit', 
+                                icon:yellowIcon,
+                                __info:data.results.bindings[i]}).addTo(map);
+        marker.on('click', clickAirMap2Marker);
+      }
+    });
+
+    // Get Air Monitoring Stations
+    $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Flat+%3Flon+%3Fid+where+%7B%0D%0A++%3Fs+a+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23SensingDevice%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23sensorId%3E+%3Fid+.%0D%0A++FILTER%28NOT+EXISTS+%7B+%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+%7D+%29%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on").success( function(data) {
+      for ( var i = 0; i < data.results.bindings.length; i++ ) {
+        var marker = L.marker( [data.results.bindings[i].lat.value, data.results.bindings[i].lon.value],
+                               {__id:data.results.bindings[i].s.value,
+                                __type:'RTMonitoring',
                                 icon:redIcon,
                                 __info:data.results.bindings[i]}).addTo(map);
         marker.on('click', clickAirMap2Marker);
       }
     });
+
+
+    // Get Alternative Fuels
   }
 
 
