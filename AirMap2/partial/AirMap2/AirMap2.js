@@ -46,18 +46,24 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
               "label": "NO2 Measurement",
               "type": "number",
               "p": {}
-            }
+            },
+            {
+              "id": "limit-id",
+              "label": "EU Limit Value",
+              "type": "number",
+              "p": {}
+            },
           ],
           "rows": [
           ]
         },
         "options": {
           "title": "NO2 Yearly Average",
-          "isStacked": "true",
+          "isStacked": "false",
           "fill": 20,
           "displayExactValues": true,
           "vAxis": {
-            "title": "PPB",
+            "title": "µg/m3",
             "gridlines": {
               "count": 10
             }
@@ -95,7 +101,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
       $scope.tubeData = response;
       if ( response.results.bindings != null ) {
         for ( var i=0; i<response.results.bindings.length; i++ ) {
-          co.data.rows.push({c:[{v:response.results.bindings[i].start.value},{v:response.results.bindings[i].value.value}]})
+          co.data.rows.push({c:[{v:response.results.bindings[i].start.value},{v:response.results.bindings[i].value.value}, {v:40}]})
         }
       }
     });
