@@ -133,7 +133,8 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     // Manually set the default image path, as when serving from a web server the app throws an
     // Error: Couldn't autodetect L.Icon.Default.imagePath, set it manually.
     // L.Icon.Default.imagePath = '../../../../bower_components/leaflet-dist/images/';
-    L.Icon.Default.imagePath = 'http://api.tiles.mapbox.com/mapbox.js/v1.0.0beta0.0/images';
+    // L.Icon.Default.imagePath = 'http://api.tiles.mapbox.com/mapbox.js/v1.0.0beta0.0/images';
+    L.Icon.Default.imagePath = '/bower_components/leaflet-dist/images';
 
     //Extend the Default marker class
     // Some icons at http://circusnow.org/wp-content/uploads/leaflet-maps-marker-icons/
