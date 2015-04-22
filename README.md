@@ -40,15 +40,9 @@ Install dependencies using
 
 npm install
 
-Use
+Use "grunt serve" to start the app
 
-grunt serve
-
-to start the app
-
-grunt 
-
-on its own should package up the app into the dist folder
+"grunt build" on its own should package up the app into the dist folder
 
 
 # Creating new modules
