@@ -101,12 +101,12 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
       $scope.tubeData = response;
       if ( response.results.bindings != null ) {
         for ( var i=0; i<response.results.bindings.length; i++ ) {
-          co.data.rows.push({c:[{v:response.results.bindings[i].start.value},{v:response.results.bindings[i].value.value}, {v:40}]})
+          co.data.rows.push({c:[{v:response.results.bindings[i].start.value},{v:response.results.bindings[i].value.value}, {v:40}]});
         }
       }
     });
 
-    $scope.chartObject = co
+    $scope.chartObject = co;
 
     $scope.markerPartial = 'AirMap2/partial/AirMap2/DiffisionTube.html';
     $scope.$apply();
