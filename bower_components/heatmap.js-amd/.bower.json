@@ -1,0 +1,13 @@
+{
+  "name": "heatmap.js-amd",
+  "homepage": "https://github.com/pa7/heatmap.js",
+  "_release": "v2.0",
+  "_resolution": {
+    "type": "tag",
+    "tag": "v2.0",
+    "commit": "0b1014c06b9448c30233f4d035d549cd72fcf2e7"
+  },
+  "_source": "git://github.com/pa7/heatmap.js.git",
+  "_target": "v2.0",
+  "_originalSource": "heatmap.js-amd"
+}

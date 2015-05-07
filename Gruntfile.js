@@ -41,7 +41,7 @@ module.exports = function (grunt) {
       main: {
         options: {
           port: 9001,
-          hostname: '*'
+          hostname: '127.0.0.1'
         }
       }
     },
@@ -52,7 +52,7 @@ module.exports = function (grunt) {
             livereloadOnError: false,
             spawn: false
         },
-        files: [createFolderGlobs(['*.js','*.less','*.html']),'!_SpecRunner.html','!.grunt'],
+        files: [createFolderGlobs(['*.js','*.less','*.html', '*.css']),'!_SpecRunner.html','!.grunt'],
         tasks: [] //all the tasks are run dynamically during the watch event handler
       }
     },
@@ -96,7 +96,10 @@ module.exports = function (grunt) {
         files: [
           {src: ['img/**'], dest: 'dist/'},
           {src: ['bower_components/font-awesome/fonts/**'], dest: 'dist/',filter:'isFile',expand:true},
-          {src: ['bower_components/bootstrap/fonts/**'], dest: 'dist/',filter:'isFile',expand:true}
+          {src: ['bower_components/bootstrap/fonts/**'], dest: 'dist/',filter:'isFile',expand:true},
+          {src: ['bower_components/leaflet-dist/images/**'], dest: 'dist/',filter:'isFile',expand:true},
+          {src: ['bower_components/leaflet-dist/leaflet.css'], dest: 'dist/',filter:'isFile',expand:true}
+          // This is where we fix our leaflet problems bower_components/leaflet-dist/images/
           //{src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: 'dist/'},
           //{src: ['bower_components/select2/*.png','bower_components/select2/*.gif'], dest:'dist/css/',flatten:true,expand:true},
           //{src: ['bower_components/angular-mocks/angular-mocks.js'], dest: 'dist/'}
