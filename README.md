@@ -73,3 +73,8 @@ grunt buildcontrol:pages
 For DEVELOPMENT testing, this will publish the JS app to https://betterwithdatasociety.github.io/OpenDataKiosk/
 
 http://leafletjs.com/examples/layers-control.html
+
+
+
+notes
+http://stackoverflow.com/questions/15057871/how-to-install-libraries-such-as-openlayers-with-bower
