@@ -25,8 +25,6 @@
     "moment": "~2.5",
     "less.js": "~1.6",
     "font-awesome": "~4.0",
-    "leaflet-dist": "~0.7.2",
-    "heatmap.js-amd": "v2.0",
     "openlayers": "*"
   }
 }
