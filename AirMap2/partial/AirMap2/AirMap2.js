@@ -9,6 +9,15 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
   var position = new OpenLayers.LonLat(-1.466944, 53.383611).transform( fromProjection, toProjection);
   var zoom           = 12; 
   map.setCenter(position, zoom );
+  var markers = new OpenLayers.Layer.Markers( "Markers" );
+  map.addLayer(markers);
+
+  var size = new OpenLayers.Size(21,25);
+  var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+  var marker = new OpenLayers.Icon('dist/bower_components/openlayers/img/marker.svg', size, offset);
+  var diffusion_marker = new OpenLayers.Icon('dist/bower_components/openlayers/img/marker-blue.png', size, offset);
+  var realtime_marker = new OpenLayers.Icon('dist/bower_components/openlayers/img/marker-gold.png', size, offset);
+  var permit_marker = new OpenLayers.Icon('dist/bower_components/openlayers/img/marker-green.png', size, offset);
 
   $scope.markerPartial = 'AirMap2/partial/AirMap2/noSelection.html';
 
@@ -167,6 +176,9 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
         // var marker = L.marker( [data.results.bindings[i].lat.value, data.results.bindings[i].lon.value],
        //                         {__id:data.results.bindings[i].s.value, __type:'Diffusion'}).addTo(map);
         // marker.on('click', clickAirMap2Marker);
+        var p = new OpenLayers.LonLat(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
+        // markers.addMarker(new OpenLayers.Marker(p)); // ,diffusion_marker.clone()));
+        markers.addMarker(new OpenLayers.Marker(p,diffusion_marker.clone()));
 
       }
     });
@@ -180,6 +192,8 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
         //                         icon:yellowIcon,
         //                         __info:data.results.bindings[i]}).addTo(map);
         // marker.on('click', clickAirMap2Marker);
+        var p = new OpenLayers.LonLat(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
+        markers.addMarker(new OpenLayers.Marker(p,permit_marker.clone()));
       }
     });
 
@@ -192,6 +206,9 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
         //                         icon:redIcon,
         //                         __info:data.results.bindings[i]}).addTo(map);
         // marker.on('click', clickAirMap2Marker);
+        var p = new OpenLayers.LonLat(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
+        // markers.addMarker(new OpenLayers.Marker(p,realtime_marker.clone()));
+        markers.addMarker(new OpenLayers.Marker(p));
       }
     });
 
