@@ -1,6 +1,7 @@
 angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
-  var map = new OpenLayers.Map("map-canvas2");
+  var map = null;
+  map = new OpenLayers.Map("map-canvas2");
   map.addLayer(new OpenLayers.Layer.OSM());
   map.zoomToMaxExtent();
 

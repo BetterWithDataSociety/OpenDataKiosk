@@ -28,6 +28,8 @@
         "xit": true,
         "spyOn": true,
         "L": true,
-        "HeatmapOverlay": true
+        "OpenLayers": true
+        // Add extra dependencies here causing problems in jshint
+        // "HeatmapOverlay": true
     }
 }
