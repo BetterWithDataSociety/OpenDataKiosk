@@ -3,7 +3,12 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
   var map = null;
   map = new OpenLayers.Map("map-canvas2");
   map.addLayer(new OpenLayers.Layer.OSM());
-  map.zoomToMaxExtent();
+  // map.zoomToMaxExtent();
+  var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
+  var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
+  var position = new OpenLayers.LonLat(-1.466944, 53.383611).transform( fromProjection, toProjection);
+  var zoom           = 12; 
+  map.setCenter(position, zoom );
 
   $scope.markerPartial = 'AirMap2/partial/AirMap2/noSelection.html';
 
