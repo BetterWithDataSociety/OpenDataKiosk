@@ -209,7 +209,13 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
         // markers.addMarker(newmarker);
         console.log("Adding feature");
         markers.addFeatures([
-            new OpenLayers.Feature.Vector(p, {l:2}),
+            new OpenLayers.Feature.Vector(p, 
+                                          {l:2},
+                                          {externalGraphic: '/dist/bower_components/openlayers/img/marker-blue.png', 
+                                           graphicHeight: 25, 
+                                           graphicWidth: 21, 
+                                           graphicXOffset:-12, 
+                                           graphicYOffset:-25 }),
         ]);
 
 
