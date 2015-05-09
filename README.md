@@ -19,9 +19,11 @@ vi index.html
 
 ## Adding a partial to a new plugin
 
-## Testing
+## Testing / Building
 
 Running `grunt test` will run the unit tests with karma.
+
+bower install sometimes needed to clean up deps
 
 
 Extra dev notes
