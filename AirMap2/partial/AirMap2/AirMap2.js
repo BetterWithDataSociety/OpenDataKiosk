@@ -1,14 +1,25 @@
 angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
   var map = null;
-  map = new OpenLayers.Map(
-    { div : "map-canvas2",
+  map = new OpenLayers.Map( { 
+      div : "map-canvas2",
       eventListeners: {
         featureclick: function(e) {
           console.log("Map says: " + e.feature.id + " clicked on " + e.feature.layer.name);
         }
       }
-    });
+  });
+
+  var layerListeners = {
+    featureclick: function(e) {
+        console.log(e.object.name + " says: " + e.feature.id + " clicked.");
+        return false;
+    },
+    nofeatureclick: function(e) {
+        console.log(e.object.name + " says: No feature clicked.");
+    }
+  };
+
 
   // See http://dev.openlayers.org/examples/feature-events.js for feature examples
   var style_map = new OpenLayers.StyleMap({
@@ -33,7 +44,8 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
   // var markers = new OpenLayers.Layer.Markers( "Markers" );
   var markers = new OpenLayers.Layer.Vector("Markers", {
-    styleMap: style_map
+    styleMap: style_map,
+     eventListeners: layerListeners
   });
   map.addLayer(markers);
 
@@ -192,22 +204,8 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Fname+%3Flat+%3Flon%0D%0Awhere+%7B%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Fname+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0").success( function(data) {
       console.log("update 2 "+data.results.bindings.length);
       for ( var i = 0; i < data.results.bindings.length; i++ ) {   
-        // console.log("%i %s %s %s %s",i,data.results.bindings[i].lat.value,data.results.bindings[i].lon.value,
-        // data.results.bindings[i].name.value,data.results.bindings[i].s.value);
-        // this.data.markers.push (L.marker( [data.results.bindings[i].lat.value,data.results.bindings[i].long.value])
-                   // .bindPopup( lbl )
-                   // .addTo(this.layer);
-
-        // var marker = L.marker( [data.results.bindings[i].lat.value, data.results.bindings[i].lon.value],
-       //                         {__id:data.results.bindings[i].s.value, __type:'Diffusion'}).addTo(map);
-        // marker.on('click', clickAirMap2Marker);
-        // var p = new OpenLayers.LonLat(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
         var p = new OpenLayers.Geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
-        // markers.addMarker(new OpenLayers.Marker(p)); // ,diffusion_marker.clone()));
-        // var newmarker = new OpenLayers.Marker(p,diffusion_marker.clone());
 
-        // markers.addMarker(newmarker);
-        console.log("Adding feature");
         markers.addFeatures([
             new OpenLayers.Feature.Vector(p, 
                                           {l:2},
@@ -225,46 +223,36 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     // Get permits
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Flat+%3Flon+%3Flabel+%3FaddrLabel+%3FdocUrl+%3Ftype+%3Fsection%0D%0Awhere+%7B+%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23industrialPermit%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Flabel+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitAddressLabel%3E+%3FaddrLabel+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitDocumentURI%3E+%3FdocUrl+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitType%3E+%3Ftype+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitSection%3E+%3Fsection+.%0D%0A%7D%0D%0Aorder+by+%3Fs&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on").success( function(data) {
       for ( var i = 0; i < data.results.bindings.length; i++ ) {   
-        // var marker = L.marker( [data.results.bindings[i].lat.value, data.results.bindings[i].lon.value],
-        //                        {__id:data.results.bindings[i].s.value, 
-        //                         __type:'Permit', 
-        //                         icon:yellowIcon,
-        //                         __info:data.results.bindings[i]}).addTo(map);
-        // marker.on('click', clickAirMap2Marker);
-        // var p = new OpenLayers.LonLat(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
-        // markers.addMarker(new OpenLayers.Marker(p,permit_marker.clone()));
+        var p = new OpenLayers.Geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
+        markers.addFeatures([
+            new OpenLayers.Feature.Vector(p, 
+                                          {l:2},
+                                          {externalGraphic: '/dist/bower_components/openlayers/img/marker-green.png', 
+                                           graphicHeight: 25, 
+                                           graphicWidth: 21, 
+                                           graphicXOffset:-12, 
+                                           graphicYOffset:-25 }),
+        ]);
       }
     });
 
     // Get Air Monitoring Stations
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Flat+%3Flon+%3Fid+where+%7B%0D%0A++%3Fs+a+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23SensingDevice%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23sensorId%3E+%3Fid+.%0D%0A++FILTER%28NOT+EXISTS+%7B+%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+%7D+%29%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on").success( function(data) {
       for ( var i = 0; i < data.results.bindings.length; i++ ) {
-        // var marker = L.marker( [data.results.bindings[i].lat.value, data.results.bindings[i].lon.value],
-        //                        {__id:data.results.bindings[i].s.value,
-        //                         __type:'RTMonitoring',
-        //                         icon:redIcon,
-        //                         __info:data.results.bindings[i]}).addTo(map);
-        // marker.on('click', clickAirMap2Marker);
-        // var p = new OpenLayers.LonLat(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
-        // markers.addMarker(new OpenLayers.Marker(p,realtime_marker.clone()));
-        // markers.addMarker(new OpenLayers.Marker(p));
+        var p = new OpenLayers.Geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
+        markers.addFeatures([
+            new OpenLayers.Feature.Vector(p, 
+                                          {l:2},
+                                          {externalGraphic: '/dist/bower_components/openlayers/img/marker-gold.png', 
+                                           graphicHeight: 25, 
+                                           graphicWidth: 21, 
+                                           graphicXOffset:-12, 
+                                           graphicYOffset:-25 }),
+        ]);
       }
     });
 
-
-    // Get Alternative Fuels
   }
-
-
-
-  // map = new L.Map('map-canvas2', {
-  //   center: new L.LatLng(53.383611, -1.466944),
-  //   zoom: 12
-    // ,layers: [grayscale, cities]
-  // });
-
-
-  // map.addLayer(osm);
 
   update(map);
 
