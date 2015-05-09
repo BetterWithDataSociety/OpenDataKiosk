@@ -6,7 +6,6 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
       eventListeners: {
         featureclick: function(e) {
           console.log("Map says: " + e.feature.id + " clicked on " + e.feature.layer.name);
-          console.log("%o",e);
           clickAirMap2Marker(e.feature.data);
         }
       }
@@ -78,7 +77,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
   }
 
   function displayDiffusion(uri) {
-    console.log(uri);
+    // console.log(uri);
 
       // Testing chart plugin
       // $scope.chartObject = {
@@ -133,7 +132,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     $scope.tubeData = null;
     $scope.msg="working...";
 
-    console.log("load data");
+    // console.log("load data");
 
     // Fetch label, what is measured, responsible party and methodology
     $http.get( "http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Flabel+%3Fprop+%3Fparty+%3Fmethodology%0D%0Awhere+%7B%0D%0A++%3C"+
@@ -165,6 +164,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
   }
 
   function clickAirMap2Marker(info) {
+    console.log("%o",info);
     if ( info.type === 'Diffusion' ) {
       displayDiffusion(info.uri);
     }
@@ -183,7 +183,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
     // Get diffusion tubes
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Fname+%3Flat+%3Flon%0D%0Awhere+%7B%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Fname+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0").success( function(data) {
-      console.log("update 2 "+data.results.bindings.length);
+      // console.log("update 2 "+data.results.bindings.length);
       for ( var i = 0; i < data.results.bindings.length; i++ ) {   
         var p = new OpenLayers.Geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
 
@@ -213,6 +213,13 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
                                           {
                                             type : 'Permit',
                                             uri : data.results.bindings[i].s.value,
+                                            lat : data.results.bindings[i].lat.value,
+                                            lon : data.results.bindings[i].lon.value,
+                                            label : data.results.bindings[i].label.value,
+                                            addrLabel : data.results.bindings[i].addrLabel.value,
+                                            docUrl : data.results.bindings[i].docUrl.value,
+                                            permitType : data.results.bindings[i].type.value,
+                                            section : data.results.bindings[i].section.value,
                                           },
                                           {externalGraphic: '/dist/bower_components/openlayers/img/marker-green.png', 
                                            graphicHeight: 25, 
