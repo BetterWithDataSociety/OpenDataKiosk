@@ -6,6 +6,8 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
       eventListeners: {
         featureclick: function(e) {
           console.log("Map says: " + e.feature.id + " clicked on " + e.feature.layer.name);
+          console.log("%o",e);
+          clickAirMap2Marker(e.feature.data);
         }
       }
   });
@@ -162,15 +164,15 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     $scope.$apply();
   }
 
-  function clickAirMap2Marker(e) {
-    if ( this.options.__type === 'Diffusion' ) {
-      displayDiffusion(this.options.__id);
+  function clickAirMap2Marker(info) {
+    if ( info.type === 'Diffusion' ) {
+      displayDiffusion(info.uri);
     }
-    else if ( this.options.__type === 'Permit' ) {
-      displayPermit(this.options.__id, this.options.__info);
+    else if ( info.type === 'Permit' ) {
+      displayPermit(info.uri, info);
     }
-    else if ( this.options.__type === 'RTMonitoring' ) {
-      displayRTMonitoring(this.options.__id, this.options.__info);
+    else if ( info.type === 'RTMonitoring' ) {
+      displayRTMonitoring(info.uri, info);
     }
     else {
       displayNotSelected();
@@ -178,27 +180,6 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
   }
 
   function update(map) {
-
-    // Manually set the default image path, as when serving from a web server the app throws an
-    // Error: Couldn't autodetect L.Icon.Default.imagePath, set it manually.
-    // L.Icon.Default.imagePath = '../../../../bower_components/leaflet-dist/images/';
-    // L.Icon.Default.imagePath = 'http://api.tiles.mapbox.com/mapbox.js/v1.0.0beta0.0/images';
-    // L.Icon.Default.imagePath = '/bower_components/leaflet-dist/images';
-
-    //Extend the Default marker class
-    // Some icons at http://circusnow.org/wp-content/uploads/leaflet-maps-marker-icons/
-    // var RedIcon = L.Icon.Default.extend({
-    //   options: {
-    //     iconUrl: 'http://circusnow.org/wp-content/uploads/leaflet-maps-marker-icons/Red-dot.png'
-    //   }
-    // });
-    // var YellowIcon = L.Icon.Default.extend({
-    //   options: {
-    //     iconUrl: 'http://circusnow.org/wp-content/uploads/leaflet-maps-marker-icons/yellow-dot.png'
-    //   }
-    // });
-    // var redIcon = new RedIcon();
-    // var yellowIcon = new YellowIcon();
 
     // Get diffusion tubes
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Fname+%3Flat+%3Flon%0D%0Awhere+%7B%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Fname+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0").success( function(data) {
@@ -208,7 +189,10 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
         markers.addFeatures([
             new OpenLayers.Feature.Vector(p, 
-                                          {l:2},
+                                          {
+                                            type : 'Diffusion',
+                                            uri : data.results.bindings[i].s.value,
+                                          },
                                           {externalGraphic: '/dist/bower_components/openlayers/img/marker-blue.png', 
                                            graphicHeight: 25, 
                                            graphicWidth: 21, 
@@ -226,7 +210,10 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
         var p = new OpenLayers.Geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
         markers.addFeatures([
             new OpenLayers.Feature.Vector(p, 
-                                          {l:2},
+                                          {
+                                            type : 'Permit',
+                                            uri : data.results.bindings[i].s.value,
+                                          },
                                           {externalGraphic: '/dist/bower_components/openlayers/img/marker-green.png', 
                                            graphicHeight: 25, 
                                            graphicWidth: 21, 
@@ -242,7 +229,10 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
         var p = new OpenLayers.Geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
         markers.addFeatures([
             new OpenLayers.Feature.Vector(p, 
-                                          {l:2},
+                                          {
+                                            type : 'RTMonitoring',
+                                            uri : 'Permit',
+                                          },
                                           {externalGraphic: '/dist/bower_components/openlayers/img/marker-gold.png', 
                                            graphicHeight: 25, 
                                            graphicWidth: 21, 
