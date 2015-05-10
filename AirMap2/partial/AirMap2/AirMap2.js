@@ -43,11 +43,12 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
   map.setCenter(position, zoom );
 
 
-  // var markers = new OpenLayers.Layer.Markers( "Markers" );
   var markers = new OpenLayers.Layer.Vector("Markers", {
+    // Can't get this working L:( strategies : [ new OpenLayers.Strategy.Cluster({threshold: 50}) ],
     styleMap: style_map,
      eventListeners: layerListeners
   });
+
   map.addLayer(markers);
 
   var size = new OpenLayers.Size(21,25);
@@ -66,8 +67,112 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
   function displayRTMonitoring(uri, info) {
     $scope.markerPartial = 'AirMap2/partial/AirMap2/RTMonitoring.html';
-    $scope.$apply();
+    $scope.uri = uri;
     $scope.info = info;
+
+    var co = {
+      lastDay : {
+        "type": "AreaChart",
+        "displayed": true,
+        "data": {
+          "cols": [
+            {
+              "id": "Timestamp",
+              "label": "Date and Hour",
+              "type": "string",
+              "p": {}
+            },
+            {
+              "id": "measurement-id",
+              "label": "Measurement",
+              "type": "number",
+              "p": {}
+            },
+            // {
+            //   "id": "limit-id",
+            //   "label": "EU Limit Value",
+            //   "type": "number",
+            //   "p": {}
+            // },
+          ],
+          "rows": [
+          ]
+        },
+        "options": {
+          "title": "Depends on measurement :: Last Day",
+          "isStacked": "false",
+          "fill": 20,
+          "displayExactValues": true,
+          "vAxis": {
+            "title": "Hourly Average",
+            "gridlines": {
+              "count": 10
+            }
+          },
+          "hAxis": {
+            "title": "Date and hour",
+          }
+        },
+        "formatters": {}
+      }
+    };
+
+    // get last 24H measurements
+    // select max(?day), max(?hour), avg(?observationValue)
+    // where {
+    //   graph ?g {
+    //     ?s <uri://opensheffield.org/properties#sensor>  <uri://opensheffield.org/datagrid/sensors/Groundhog2/LD-Groundhog2_NO2.ic> .
+    //     ?s a <http://purl.oclc.org/NET/ssnx/ssn#ObservationValue> .
+    //     ?s <http://purl.oclc.org/NET/ssnx/ssn#endTime> ?observationTime.
+    //     ?s <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?observationValue .
+    //     BIND (bif:subseq( str( ?observationTime ),0,11) AS ?day) .
+    //     BIND (bif:subseq( str( ?observationTime ),11,13) AS ?hour) .
+    //     BIND (bif:subseq( str( ?observationTime ),0,13) AS ?dayhour) .
+    //     FILTER ( xsd:date(?observationTime) > xsd:date("2014-10-13") && xsd:date(?observationTime) <=  xsd:date("2015-11-13") )  .
+    //   }
+    // }
+    // GROUP BY ?dayhour
+    // ORDER BY ?dayhour
+    // Fetch all measurements
+    var d = new Date();
+    
+    // Rewind 24H
+    d.setDate(d.getDate() - 2);
+    var startdate = d.getFullYear() + '-' + ('0' + (d.getMonth()+1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+    // FF 48H
+    d.setDate(d.getDate() + 4);
+    var enddate = d.getFullYear() + '-' + ('0' + (d.getMonth()+1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+
+    $scope.startdate=startdate;
+    $scope.enddate=enddate;
+    var encoded_uri = encodeURIComponent(uri);
+
+    var last_24h="http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+max%28%3Fday%29%2C+max%28%3Fhour%29%2C+avg%28%3FobservationValue%29%0D%0Awhere+%7B%0D%0A++graph+%3Fg+%7B%0D%0A++++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23sensor%3E+%3C"+encoded_uri+"%3E+.%0D%0A++++%3Fs+a+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23ObservationValue%3E+.%0D%0A++++%3Fs+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23endTime%3E+%3FobservationTime.%0D%0A++++%3Fs+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23hasValue%3E+%3FobservationValue+.%0D%0A++++BIND+%28bif%3Asubseq%28+str%28+%3FobservationTime+%29%2C0%2C11%29+AS+%3Fday%29+.%0D%0A++++BIND+%28bif%3Asubseq%28+str%28+%3FobservationTime+%29%2C11%2C13%29+AS+%3Fhour%29+.%0D%0A++++BIND+%28bif%3Asubseq%28+str%28+%3FobservationTime+%29%2C0%2C13%29+AS+%3Fdayhour%29+.%0D%0A++++FILTER+%28+xsd%3Adate%28%3FobservationTime%29+%3E+xsd%3Adate%28%22"+startdate+"%22%29+%26%26+xsd%3Adate%28%3FobservationTime%29+%3C%3D++xsd%3Adate%28%22"+enddate+"%22%29+%29++%0D%0A++%7D%0D%0A%7D%0D%0AGROUP+BY+%3Fdayhour%0D%0AORDER+BY+%3Fdayhour%0D%0A%0D%0A%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on";
+
+
+    console.log("SPARQL for \""+uri+"\" "+encoded_uri);
+    console.log(last_24h);
+
+    $http.get(last_24h).success( function(response) {
+      console.log("Response object : %o",response);
+      $scope.tubeData = response;
+      if ( response.results.bindings != null ) {
+        for ( var i=0; i<response.results.bindings.length; i++ ) {
+          co.lastDay.data.rows.push({c:[{v: ( response.results.bindings[i]['callret-0'].value + ' ' + response.results.bindings[i]['callret-1'].value + ':00') },
+                                        {v:response.results.bindings[i]['callret-2'].value}, 
+                                        {v:40}]});
+        }
+      }
+    });
+
+    
+
+    // get last 31 readings
+
+    // get yearly mean readings
+
+    $scope.data = co;
+    $scope.$apply();
   }
 
   function displayPermit(uri, info) {
@@ -114,7 +219,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
           "fill": 20,
           "displayExactValues": true,
           "vAxis": {
-            "title": "µg/m3",
+            "title": "Hourly Average",
             "gridlines": {
               "count": 10
             }
@@ -231,6 +336,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     });
 
     // Get Air Monitoring Stations
+    
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Flat+%3Flon+%3Fid+where+%7B%0D%0A++%3Fs+a+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23SensingDevice%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23sensorId%3E+%3Fid+.%0D%0A++FILTER%28NOT+EXISTS+%7B+%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+%7D+%29%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on").success( function(data) {
       for ( var i = 0; i < data.results.bindings.length; i++ ) {
         var p = new OpenLayers.Geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
@@ -238,7 +344,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
             new OpenLayers.Feature.Vector(p, 
                                           {
                                             type : 'RTMonitoring',
-                                            uri : 'Permit',
+                                            uri : data.results.bindings[i].s.value
                                           },
                                           {externalGraphic: '/dist/bower_components/openlayers/img/marker-gold.png', 
                                            graphicHeight: 25, 
