@@ -78,7 +78,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
           "cols": [
             {
               "id": "Timestamp",
-              "label": "Date and Hour",
+              "label": "Hour and Date",
               "type": "string",
               "p": {}
             },
@@ -111,6 +111,64 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
           },
           "hAxis": {
             "title": "Date and hour",
+            // slantedText:true,
+            // slantedTextAngle:90,
+            showTextEvery: 6,
+            // "viewWindow":{max:48}
+          }
+        },
+        "formatters": {}
+      },
+      lastMonth : {
+        "type": "AreaChart",
+        "displayed": true,
+        "data": {
+          "cols": [
+            {
+              "id": "Date",
+              "label": "Date",
+              "type": "string",
+              "p": {}
+            },
+            {
+              "id": "measurement-id",
+              "label": "Measurement",
+              "type": "number",
+              "p": {}
+            },
+            {
+              "id": "highest-id",
+              "label": "Highest",
+              "type": "number",
+              "p": {}
+            },
+            {
+              "id": "lowest-id",
+              "label": "Lowest",
+              "type": "number",
+              "p": {}
+            },
+          ],
+          "rows": [
+          ]
+        },
+        "options": {
+          "title": "Monthly average",
+          "isStacked": "false",
+          "fill": 20,
+          "displayExactValues": true,
+          "vAxis": {
+            "title": "Hourly Average",
+            "gridlines": {
+              "count": 10
+            }
+          },
+          "hAxis": {
+            "title": "Date",
+            // slantedText:true,
+            // slantedTextAngle:90,
+            showTextEvery: 6,
+            // "viewWindow":{max:48}
           }
         },
         "formatters": {}
@@ -150,24 +208,64 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     var last_24h="http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+max%28%3Fday%29%2C+max%28%3Fhour%29%2C+avg%28%3FobservationValue%29%0D%0Awhere+%7B%0D%0A++graph+%3Fg+%7B%0D%0A++++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23sensor%3E+%3C"+encoded_uri+"%3E+.%0D%0A++++%3Fs+a+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23ObservationValue%3E+.%0D%0A++++%3Fs+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23endTime%3E+%3FobservationTime.%0D%0A++++%3Fs+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23hasValue%3E+%3FobservationValue+.%0D%0A++++BIND+%28bif%3Asubseq%28+str%28+%3FobservationTime+%29%2C0%2C11%29+AS+%3Fday%29+.%0D%0A++++BIND+%28bif%3Asubseq%28+str%28+%3FobservationTime+%29%2C11%2C13%29+AS+%3Fhour%29+.%0D%0A++++BIND+%28bif%3Asubseq%28+str%28+%3FobservationTime+%29%2C0%2C13%29+AS+%3Fdayhour%29+.%0D%0A++++FILTER+%28+xsd%3Adate%28%3FobservationTime%29+%3E+xsd%3Adate%28%22"+startdate+"%22%29+%26%26+xsd%3Adate%28%3FobservationTime%29+%3C%3D++xsd%3Adate%28%22"+enddate+"%22%29+%29++%0D%0A++%7D%0D%0A%7D%0D%0AGROUP+BY+%3Fdayhour%0D%0AORDER+BY+%3Fdayhour%0D%0A%0D%0A%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on";
 
 
-    console.log("SPARQL for \""+uri+"\" "+encoded_uri);
-    console.log(last_24h);
-
     $http.get(last_24h).success( function(response) {
-      console.log("Response object : %o",response);
-      $scope.tubeData = response;
-      if ( response.results.bindings != null ) {
-        for ( var i=0; i<response.results.bindings.length; i++ ) {
-          co.lastDay.data.rows.push({c:[{v: ( response.results.bindings[i]['callret-0'].value + ' ' + response.results.bindings[i]['callret-1'].value + ':00') },
-                                        {v:response.results.bindings[i]['callret-2'].value}, 
-                                        {v:40}]});
+      console.log("Day range Response for %s : %o",encoded_uri,response);
+      if ( response.results != null ) {
+        if ( response.results.bindings != null ) {
+          for ( var i=0; i<response.results.bindings.length; i++ ) {
+            co.lastDay.data.rows.push({c:[{v: ( response.results.bindings[i]['callret-1'].value + ':00 ' + response.results.bindings[i]['callret-0'].value ) },
+                                          {v:response.results.bindings[i]['callret-2'].value}, 
+                                          {v:40}]});
+          }
         }
+      }
+      else {
+        console.log("no month range results for "+encoded_uri);
       }
     });
 
-    
+    // get last 31 readings with error bars
+    // select max(?day), avg(?observationValue), max(?observationValue), min(?observationValue)
+    // where {
+    //   graph ?g {
+    //     ?s <uri://opensheffield.org/properties#sensor> <uri://opensheffield.org/datagrid/sensors/Groundhog1/LD-Groundhog1_NO2.ic> .
+    //     ?s a <http://purl.oclc.org/NET/ssnx/ssn#ObservationValue> .
+    //     ?s <http://purl.oclc.org/NET/ssnx/ssn#endTime> ?observationTime.
+    //     ?s <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?observationValue .
+    //     BIND (bif:subseq( str( ?observationTime ),0,11) AS ?day) .
+    //     FILTER ( xsd:date(?observationTime) > xsd:date("2015-05-09") && xsd:date(?observationTime) <=  xsd:date("2015-05-11") )  
+    //   }
+    // }
+    // GROUP BY ?day
+    // ORDER BY ?day
+    d = new Date();
+    enddate = d.getFullYear() + '-' + ('0' + (d.getMonth()+1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+    // Rewind 30D
+    d.setDate(d.getDate() - 30);
+    startdate = d.getFullYear() + '-' + ('0' + (d.getMonth()+1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
 
-    // get last 31 readings
+    var last_month = "http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+max%28%3Fday%29%2C+avg%28%3FobservationValue%29%2C+max%28%3FobservationValue%29%2C+min%28%3FobservationValue%29%0D%0Awhere+%7B%0D%0A++graph+%3Fg+%7B%0D%0A++++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23sensor%3E+%3C"+encoded_uri+"%3E+.%0D%0A++++%3Fs+a+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23ObservationValue%3E+.%0D%0A++++%3Fs+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23endTime%3E+%3FobservationTime.%0D%0A++++%3Fs+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23hasValue%3E+%3FobservationValue+.%0D%0A++++BIND+%28bif%3Asubseq%28+str%28+%3FobservationTime+%29%2C0%2C11%29+AS+%3Fday%29+.%0D%0A++++FILTER+%28+xsd%3Adate%28%3FobservationTime%29+%3E+xsd%3Adate%28%22"+startdate+"%22%29+%26%26+xsd%3Adate%28%3FobservationTime%29+%3C%3D++xsd%3Adate%28%22"+enddate+"%22%29+%29++%0D%0A++%7D%0D%0A%7D%0D%0AGROUP+BY+%3Fday%0D%0AORDER+BY+%3Fday%0D%0A%0D%0A%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on"
+
+    console.log(last_month);
+
+    $http.get(last_month).success( function(response) {
+      console.log("Month range Response for %s : %o",encoded_uri,response);
+      if ( response.results != null ) {
+        if ( response.results.bindings != null ) {
+          for ( var i=0; i<response.results.bindings.length; i++ ) {
+            co.lastMonth.data.rows.push({c:[{v:response.results.bindings[i]['callret-0'].value },
+                                            {v:response.results.bindings[i]['callret-1'].value}, 
+                                            {v:response.results.bindings[i]['callret-2'].value}, 
+                                            {v:response.results.bindings[i]['callret-3'].value}, 
+                                        ]});
+          }
+        }
+      }
+      else {
+        console.log("no results for "+encoded_uri);
+      }
+   
+    });
 
     // get yearly mean readings
 
