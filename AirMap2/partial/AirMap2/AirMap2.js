@@ -61,7 +61,6 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
                                    name: 'Null Island', 
                                    population: 4000, 
                                    rainfall: 500,
-                                   style: iconStyle
                                    });
     feature.setStyle(iconStyle);
   
@@ -412,30 +411,24 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Fname+%3Flat+%3Flon%0D%0Awhere+%7B%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Fname+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0").success( function(data) {
       // console.log("update 2 "+data.results.bindings.length);
       for ( var i = 0; i < data.results.bindings.length; i++ ) {   
-        var p = new ol.geom.Point(ol.proj.transform([data.results.bindings[i].lon.value, data.results.bindings[i].lat.value], 'EPSG:4326', 'EPSG:900913'));
-        console.log("adding point %o",p);
+        // var p = new ol.geom.Point(ol.proj.transform([data.results.bindings[i].lon.value, data.results.bindings[i].lat.value], 'EPSG:4326', 'EPSG:900913'));
 
-        // var iconFeature = new ol.Feature({
-        //   geometry: new ol.geom.Point([0, 0]),
-        //   name: 'Null Island',
-        //   population: 4000,
-        //   rainfall: 500
-        // });
+        var p = new ol.geom.Point(ol.proj.transform([parseFloat(data.results.bindings[i].lon.value), 
+                                                     parseFloat(data.results.bindings[i].lat.value)], 'EPSG:4326', 'EPSG:900913'));
+        console.log("adding point %o %o",p,data.results.bindings[i]);
 
-        mkrs.addFeatures([
-            new ol.Feature({geometry:p, 
-                            type : 'Diffusion',
-                            uri : data.results.bindings[i].s.value
-                            // {externalGraphic: '/dist/bower_components/openlayers/img/marker-blue.png', 
-                            //  graphicHeight: 25, 
-                            //  graphicWidth: 21, 
-                            //  graphicXOffset:-12, 
-                            //  graphicYOffset:-25 }),
-                           })
-            ]);
+        var f = new ol.Feature({geometry:p,
+                                name:'g',
+                                type : 'Diffusion',
+                                uri : data.results.bindings[i].s.value
+                           });
 
-
+        f.setStyle(iconStyle);
+        mkrs.addFeatures([f]);
+        console.log("Added %o",p);
       }
+      map.render();
+      map.renderSync();
     });
 
     // Get permits
@@ -483,6 +476,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
         // ]);
       }
     });
+
 
   }
 
