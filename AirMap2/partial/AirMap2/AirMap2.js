@@ -1,39 +1,35 @@
 angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
-  var map = null;
-  map = new ol.Map( { 
       // eventListeners: {
       //   featureclick: function(e) {
       //     console.log("Map says: " + e.feature.id + " clicked on " + e.feature.layer.name);
       //     clickAirMap2Marker(e.feature.data);
       //   }
       // },
+
+
+  var map = null;
+  map = new ol.Map( { 
+      target: 'map-canvas2',
       layers : [
         new ol.layer.Tile({
           source: new ol.source.OSM()
         })
       ],
-      controls: ol.control.defaults({
-        attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-          collapsible: false
-        })
-      }),
-      target: 'map-canvas2',
       view: new ol.View({
-        center: ol.proj.transform([-1.466944, 53.383611, 53.383611], 'EPSG:4326', 'EPSG:900913'),
+        center: ol.proj.transform([-1.466944, 53.383611], 'EPSG:4326', 'EPSG:900913'),
         zoom: 12
       })
-
   });
 
   var layerListeners = {
-    // featureclick: function(e) {
-    //     console.log(e.object.name + " says: " + e.feature.id + " clicked.");
-    //     return false;
-    // },
-    // nofeatureclick: function(e) {
-    //     console.log(e.object.name + " says: No feature clicked.");
-    // }
+    featureclick: function(e) {
+        console.log(e.object.name + " says: " + e.feature.id + " clicked.");
+        return false;
+    },
+    nofeatureclick: function(e) {
+        console.log(e.object.name + " says: No feature clicked.");
+    }
   };
 
 
@@ -49,29 +45,41 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
   //   )
   // });
 
-  // map.zoomToMaxExtent();
+  // https://www.iconfinder.com/icons/73051/azure_base_map_marker_nounproject_outside_icon#size=24
 
-  // var fromProjection = new ol.Projection("EPSG:4326");   // Transform from WGS 1984
-  // var toProjection   = new ol.Projection("EPSG:900913"); // to Spherical Mercator Projection
-  // var position = new ol.LonLat(-1.466944, 53.383611).transform( fromProjection, toProjection);
-  // var zoom           = 12; 
-  // map.setCenter(position, zoom );
+    var iconStyle = new ol.style.Style({
+      image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+        // anchor: [0.5, 46],
+        // anchorXUnits: 'fraction',
+        // anchorYUnits: 'pixels',
+        // opacity: 0.75,
+        src: 'https://cdn1.iconfinder.com/data/icons/Map-Markers-Icons-Demo-PNG/24/Map-Marker-Marker-Outside-Azure.png'
+      }))
+    });
+  
+    var feature = new ol.Feature({ geometry: new ol.geom.Point(ol.proj.transform([-1.466944, 53.383611], 'EPSG:4326', 'EPSG:900913')), 
+                                   name: 'Null Island', 
+                                   population: 4000, 
+                                   rainfall: 500,
+                                   style: iconStyle
+                                   });
+    feature.setStyle(iconStyle);
+  
+      var markers = new ol.source.Vector({
+      features: [
+        feature
+        ]
+    });
 
-
-  var markers = new ol.layer.Vector("Markers", {
-    // Can't get this working L:( strategies : [ new ol.strategy.Cluster({threshold: 50}) ],
-    // styleMap: style_map,
-     eventListeners: layerListeners
-  });
-
-  map.addLayer(markers);
-
-  // var size = new ol.Size(21,25);
-  // var offset = new ol.Pixel(-(size.w/2), -size.h);
-  // var marker = new ol.Icon('/dist/bower_components/openlayers/img/marker.svg', size, offset);
-  // var diffusion_marker = new ol.Icon('/dist/bower_components/openlayers/img/marker-blue.png', size, offset);
-  // var realtime_marker = new ol.Icon('/dist/bower_components/openlayers/img/marker-gold.png', size, offset);
-  // var permit_marker = new ol.Icon('/dist/bower_components/openlayers/img/marker-green.png', size, offset);
+    var marker_layer = new ol.layer.Vector({
+      source: markers,
+      eventListeners: layerListeners
+    });
+  
+    map.addLayer(marker_layer);
+  
+    var zoomslider = new ol.control.ZoomSlider();
+    map.addControl(zoomslider);
 
   $scope.markerPartial = 'AirMap2/partial/AirMap2/noSelection.html';
 
@@ -397,26 +405,34 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     }
   }
 
-  function update(map) {
+  function update(map, mkrs) {
+    console.log("Calling update %o, %o",map,mkrs);
 
     // Get diffusion tubes
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Fname+%3Flat+%3Flon%0D%0Awhere+%7B%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Fname+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0").success( function(data) {
       // console.log("update 2 "+data.results.bindings.length);
       for ( var i = 0; i < data.results.bindings.length; i++ ) {   
-        // var p = new ol.geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
+        var p = new ol.geom.Point(ol.proj.transform([data.results.bindings[i].lon.value, data.results.bindings[i].lat.value], 'EPSG:4326', 'EPSG:900913'));
+        console.log("adding point %o",p);
 
-        // markers.addFeatures([
-        //     new ol.feature.Vector(p, 
-        //                                   {
-        //                                     type : 'Diffusion',
-        //                                     uri : data.results.bindings[i].s.value,
-        //                                   },
-        //                                   {externalGraphic: '/dist/bower_components/openlayers/img/marker-blue.png', 
-        //                                    graphicHeight: 25, 
-        //                                    graphicWidth: 21, 
-        //                                    graphicXOffset:-12, 
-        //                                    graphicYOffset:-25 }),
-        // ]);
+        // var iconFeature = new ol.Feature({
+        //   geometry: new ol.geom.Point([0, 0]),
+        //   name: 'Null Island',
+        //   population: 4000,
+        //   rainfall: 500
+        // });
+
+        mkrs.addFeatures([
+            new ol.Feature({geometry:p, 
+                            type : 'Diffusion',
+                            uri : data.results.bindings[i].s.value
+                            // {externalGraphic: '/dist/bower_components/openlayers/img/marker-blue.png', 
+                            //  graphicHeight: 25, 
+                            //  graphicWidth: 21, 
+                            //  graphicXOffset:-12, 
+                            //  graphicYOffset:-25 }),
+                           })
+            ]);
 
 
       }
@@ -470,6 +486,6 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
   }
 
-  // update(map);
+  update(map, markers);
 
 });
