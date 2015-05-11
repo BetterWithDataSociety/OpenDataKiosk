@@ -25,6 +25,6 @@
     "moment": "~2.5",
     "less.js": "~1.6",
     "font-awesome": "~4.0",
-    "v3.5.0-dist": "https://github.com/openlayers/ol3/releases/download/v3.5.0/v3.5.0-dist.zip"
+    "openlayers": "https://github.com/openlayers/ol3/releases/download/v3.5.0/v3.5.0-dist.zip"
   }
 }

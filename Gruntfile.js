@@ -97,9 +97,7 @@ module.exports = function (grunt) {
           {src: ['img/**'], dest: 'dist/'},
           {src: ['bower_components/font-awesome/fonts/**'], dest: 'dist/',filter:'isFile',expand:true},
           {src: ['bower_components/bootstrap/fonts/**'], dest: 'dist/',filter:'isFile',expand:true},
-          {src: ['bower_components/openlayers/lib/**'], dest: 'dist/',filter:'isFile',expand:true},
-          {src: ['bower_components/openlayers/img/**'], dest: 'dist/',filter:'isFile',expand:true},
-          {src: ['bower_components/openlayers/theme/**'], dest: 'dist/',filter:'isFile',expand:true},
+          {src: ['bower_components/openlayers/**'], dest: 'dist/',filter:'isFile',expand:true},
           // {src: ['bower_components/leaflet-dist/images/**'], dest: 'dist/',filter:'isFile',expand:true},
           // {src: ['bower_components/leaflet-dist/leaflet.css'], dest: 'dist/',filter:'isFile',expand:true}
           // This is where we fix our leaflet problems bower_components/leaflet-dist/images/
