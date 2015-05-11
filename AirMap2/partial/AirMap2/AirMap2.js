@@ -20,8 +20,8 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
       }),
       target: 'map-canvas2',
       view: new ol.View({
-        center: [0, 0],
-        zoom: 2
+        center: ol.proj.transform([-1.466944, 53.383611, 53.383611], 'EPSG:4326', 'EPSG:900913'),
+        zoom: 12
       })
 
   });
