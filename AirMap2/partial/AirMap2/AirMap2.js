@@ -1,14 +1,19 @@
 angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
   var map = null;
-  map = new OpenLayers.Map( { 
+  map = new ol.Map( { 
       div : "map-canvas2",
       eventListeners: {
         featureclick: function(e) {
           console.log("Map says: " + e.feature.id + " clicked on " + e.feature.layer.name);
           clickAirMap2Marker(e.feature.data);
         }
-      }
+      },
+      layers : [
+        new ol.layer.Tile({
+          source: new ol.source.OSM()
+        })
+      ]
   });
 
   var layerListeners = {
@@ -23,40 +28,40 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
 
   // See http://dev.openlayers.org/examples/feature-events.js for feature examples
-  var style_map = new OpenLayers.StyleMap({
-    'default': OpenLayers.Util.applyDefaults(
-        {label: "${l}", pointRadius: 10},
-        OpenLayers.Feature.Vector.style["default"]
-    ),
-    'select': OpenLayers.Util.applyDefaults(
-        {pointRadius: 10},
-        OpenLayers.Feature.Vector.style.select
-    )
-  });
+  // var style_map = new ol.StyleMap({
+  //   'default': ol.Util.applyDefaults(
+  //       {label: "${l}", pointRadius: 10},
+  //       ol.feature.Vector.style["default"]
+  //   ),
+  //   'select': ol.Util.applyDefaults(
+  //       {pointRadius: 10},
+  //       ol.feature.Vector.style.select
+  //   )
+  // });
 
-  map.addLayer(new OpenLayers.Layer.OSM());
   // map.zoomToMaxExtent();
-  var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
-  var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
-  var position = new OpenLayers.LonLat(-1.466944, 53.383611).transform( fromProjection, toProjection);
-  var zoom           = 12; 
-  map.setCenter(position, zoom );
+
+  // var fromProjection = new ol.Projection("EPSG:4326");   // Transform from WGS 1984
+  // var toProjection   = new ol.Projection("EPSG:900913"); // to Spherical Mercator Projection
+  // var position = new ol.LonLat(-1.466944, 53.383611).transform( fromProjection, toProjection);
+  // var zoom           = 12; 
+  // map.setCenter(position, zoom );
 
 
-  var markers = new OpenLayers.Layer.Vector("Markers", {
-    // Can't get this working L:( strategies : [ new OpenLayers.Strategy.Cluster({threshold: 50}) ],
-    styleMap: style_map,
+  var markers = new ol.layer.Vector("Markers", {
+    // Can't get this working L:( strategies : [ new ol.strategy.Cluster({threshold: 50}) ],
+    // styleMap: style_map,
      eventListeners: layerListeners
   });
 
   map.addLayer(markers);
 
-  var size = new OpenLayers.Size(21,25);
-  var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
-  var marker = new OpenLayers.Icon('/dist/bower_components/openlayers/img/marker.svg', size, offset);
-  var diffusion_marker = new OpenLayers.Icon('/dist/bower_components/openlayers/img/marker-blue.png', size, offset);
-  var realtime_marker = new OpenLayers.Icon('/dist/bower_components/openlayers/img/marker-gold.png', size, offset);
-  var permit_marker = new OpenLayers.Icon('/dist/bower_components/openlayers/img/marker-green.png', size, offset);
+  // var size = new ol.Size(21,25);
+  // var offset = new ol.Pixel(-(size.w/2), -size.h);
+  // var marker = new ol.Icon('/dist/bower_components/openlayers/img/marker.svg', size, offset);
+  // var diffusion_marker = new ol.Icon('/dist/bower_components/openlayers/img/marker-blue.png', size, offset);
+  // var realtime_marker = new ol.Icon('/dist/bower_components/openlayers/img/marker-gold.png', size, offset);
+  // var permit_marker = new ol.Icon('/dist/bower_components/openlayers/img/marker-green.png', size, offset);
 
   $scope.markerPartial = 'AirMap2/partial/AirMap2/noSelection.html';
 
@@ -388,20 +393,20 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Fname+%3Flat+%3Flon%0D%0Awhere+%7B%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Fname+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0").success( function(data) {
       // console.log("update 2 "+data.results.bindings.length);
       for ( var i = 0; i < data.results.bindings.length; i++ ) {   
-        var p = new OpenLayers.Geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
+        // var p = new ol.geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
 
-        markers.addFeatures([
-            new OpenLayers.Feature.Vector(p, 
-                                          {
-                                            type : 'Diffusion',
-                                            uri : data.results.bindings[i].s.value,
-                                          },
-                                          {externalGraphic: '/dist/bower_components/openlayers/img/marker-blue.png', 
-                                           graphicHeight: 25, 
-                                           graphicWidth: 21, 
-                                           graphicXOffset:-12, 
-                                           graphicYOffset:-25 }),
-        ]);
+        // markers.addFeatures([
+        //     new ol.feature.Vector(p, 
+        //                                   {
+        //                                     type : 'Diffusion',
+        //                                     uri : data.results.bindings[i].s.value,
+        //                                   },
+        //                                   {externalGraphic: '/dist/bower_components/openlayers/img/marker-blue.png', 
+        //                                    graphicHeight: 25, 
+        //                                    graphicWidth: 21, 
+        //                                    graphicXOffset:-12, 
+        //                                    graphicYOffset:-25 }),
+        // ]);
 
 
       }
@@ -410,26 +415,26 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     // Get permits
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Flat+%3Flon+%3Flabel+%3FaddrLabel+%3FdocUrl+%3Ftype+%3Fsection%0D%0Awhere+%7B+%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23industrialPermit%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Flabel+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitAddressLabel%3E+%3FaddrLabel+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitDocumentURI%3E+%3FdocUrl+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitType%3E+%3Ftype+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitSection%3E+%3Fsection+.%0D%0A%7D%0D%0Aorder+by+%3Fs&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on").success( function(data) {
       for ( var i = 0; i < data.results.bindings.length; i++ ) {   
-        var p = new OpenLayers.Geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
-        markers.addFeatures([
-            new OpenLayers.Feature.Vector(p, 
-                                          {
-                                            type : 'Permit',
-                                            uri : data.results.bindings[i].s.value,
-                                            lat : data.results.bindings[i].lat.value,
-                                            lon : data.results.bindings[i].lon.value,
-                                            label : data.results.bindings[i].label.value,
-                                            addrLabel : data.results.bindings[i].addrLabel.value,
-                                            docUrl : data.results.bindings[i].docUrl.value,
-                                            permitType : data.results.bindings[i].type.value,
-                                            section : data.results.bindings[i].section.value,
-                                          },
-                                          {externalGraphic: '/dist/bower_components/openlayers/img/marker-green.png', 
-                                           graphicHeight: 25, 
-                                           graphicWidth: 21, 
-                                           graphicXOffset:-12, 
-                                           graphicYOffset:-25 }),
-        ]);
+        // var p = new ol.geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
+        // markers.addFeatures([
+        //     new ol.feature.Vector(p, 
+        //                                   {
+        //                                     type : 'Permit',
+        //                                     uri : data.results.bindings[i].s.value,
+        //                                     lat : data.results.bindings[i].lat.value,
+        //                                     lon : data.results.bindings[i].lon.value,
+        //                                     label : data.results.bindings[i].label.value,
+        //                                     addrLabel : data.results.bindings[i].addrLabel.value,
+        //                                     docUrl : data.results.bindings[i].docUrl.value,
+        //                                     permitType : data.results.bindings[i].type.value,
+        //                                     section : data.results.bindings[i].section.value,
+        //                                   },
+        //                                   {externalGraphic: '/dist/bower_components/openlayers/img/marker-green.png', 
+        //                                    graphicHeight: 25, 
+        //                                    graphicWidth: 21, 
+        //                                    graphicXOffset:-12, 
+        //                                    graphicYOffset:-25 }),
+        // ]);
       }
     });
 
@@ -437,19 +442,19 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Flat+%3Flon+%3Fid+where+%7B%0D%0A++%3Fs+a+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23SensingDevice%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23sensorId%3E+%3Fid+.%0D%0A++FILTER%28NOT+EXISTS+%7B+%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+%7D+%29%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on").success( function(data) {
       for ( var i = 0; i < data.results.bindings.length; i++ ) {
-        var p = new OpenLayers.Geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
-        markers.addFeatures([
-            new OpenLayers.Feature.Vector(p, 
-                                          {
-                                            type : 'RTMonitoring',
-                                            uri : data.results.bindings[i].s.value
-                                          },
-                                          {externalGraphic: '/dist/bower_components/openlayers/img/marker-gold.png', 
-                                           graphicHeight: 25, 
-                                           graphicWidth: 21, 
-                                           graphicXOffset:-12, 
-                                           graphicYOffset:-25 }),
-        ]);
+        // var p = new ol.geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
+        // markers.addFeatures([
+        //     new ol.feature.Vector(p, 
+        //                                   {
+        //                                     type : 'RTMonitoring',
+        //                                     uri : data.results.bindings[i].s.value
+        //                                   },
+        //                                   {externalGraphic: '/dist/bower_components/openlayers/img/marker-gold.png', 
+        //                                    graphicHeight: 25, 
+        //                                    graphicWidth: 21, 
+        //                                    graphicXOffset:-12, 
+        //                                    graphicYOffset:-25 }),
+        // ]);
       }
     });
 
