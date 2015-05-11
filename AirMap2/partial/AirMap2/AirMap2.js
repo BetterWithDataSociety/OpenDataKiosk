@@ -2,28 +2,38 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
   var map = null;
   map = new ol.Map( { 
-      div : "map-canvas2",
-      eventListeners: {
-        featureclick: function(e) {
-          console.log("Map says: " + e.feature.id + " clicked on " + e.feature.layer.name);
-          clickAirMap2Marker(e.feature.data);
-        }
-      },
+      // eventListeners: {
+      //   featureclick: function(e) {
+      //     console.log("Map says: " + e.feature.id + " clicked on " + e.feature.layer.name);
+      //     clickAirMap2Marker(e.feature.data);
+      //   }
+      // },
       layers : [
         new ol.layer.Tile({
           source: new ol.source.OSM()
         })
-      ]
+      ],
+      controls: ol.control.defaults({
+        attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
+          collapsible: false
+        })
+      }),
+      target: 'map-canvas2',
+      view: new ol.View({
+        center: [0, 0],
+        zoom: 2
+      })
+
   });
 
   var layerListeners = {
-    featureclick: function(e) {
-        console.log(e.object.name + " says: " + e.feature.id + " clicked.");
-        return false;
-    },
-    nofeatureclick: function(e) {
-        console.log(e.object.name + " says: No feature clicked.");
-    }
+    // featureclick: function(e) {
+    //     console.log(e.object.name + " says: " + e.feature.id + " clicked.");
+    //     return false;
+    // },
+    // nofeatureclick: function(e) {
+    //     console.log(e.object.name + " says: No feature clicked.");
+    // }
   };
 
 
@@ -460,6 +470,6 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
   }
 
-  update(map);
+  // update(map);
 
 });
