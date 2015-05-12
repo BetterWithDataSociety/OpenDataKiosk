@@ -1,0 +1,9 @@
+<h2>There are many items at that location, please select one below</h2>
+
+<ul class="list-group">
+  <li class="list-group-item" ng-repeat="row in fl">
+    <span ng-switch on="row.values_.type">
+      <img ng-switch-when="Diffusion" src="/img/tube_default.png"></img>
+    </span> {{row.values_.name}}
+  </li>
+</ul>

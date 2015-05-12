@@ -18,11 +18,24 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
   map.on("click", function(e) {
     var c = 0;
+    var fl = [];
     map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
-        console.log("Feature: %d %o",c++,feature);
-        clickAirMap2Marker(feature);
+      console.log("Feature: %d %o",c++,feature);
+      fl.push(feature);
     });
+
     console.log("Got %d features",c);
+
+    if ( c === 0 ) {
+      displayNotSelected();
+    }
+    else if ( c === 1 ) {
+      clickAirMap2Marker(fl[0].values_);
+    }
+    else {
+      displaySelectMultiple(fl);
+    }
+
   });
 
   // See http://dev.openlayers.org/examples/feature-events.js for feature examples
@@ -73,6 +86,12 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     map.addControl(zoomslider);
 
   $scope.markerPartial = 'AirMap2/partial/AirMap2/noSelection.html';
+
+  function displaySelectMultiple(fl) {
+    $scope.markerPartial = 'AirMap2/partial/AirMap2/selectMultiple.html';
+    $scope.fl = fl;
+    $scope.$apply();
+  }
 
   function displayNotSelected() {
     $scope.markerPartial = 'AirMap2/partial/AirMap2/noSelection.html';
@@ -410,7 +429,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
         // console.log("adding point %o %o",p,data.results.bindings[i]);
 
         var f = new ol.Feature({geometry:p,
-                                name:'g',
+                                name:data.results.bindings[i].name.value,
                                 type : 'Diffusion',
                                 uri : data.results.bindings[i].s.value
                            });
