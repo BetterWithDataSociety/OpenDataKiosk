@@ -98,7 +98,13 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     $scope.$apply();
   }
 
+  $scope.displayRTMonitoring = function(uri,info) {
+    displayRTMonitoring(uri,info);
+  };
+
   function displayRTMonitoring(uri, info) {
+    console.log("displayRTMonitoring(%o,%o)",uri,info);
+
     $scope.markerPartial = 'AirMap2/partial/AirMap2/RTMonitoring.html';
     $scope.uri = uri;
     $scope.info = info;
@@ -277,7 +283,24 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     d.setDate(d.getDate() - 30);
     startdate = d.getFullYear() + '-' + ('0' + (d.getMonth()+1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
 
-    var last_month = "http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+max%28%3Fday%29%2C+avg%28%3FobservationValue%29%2C+max%28%3FobservationValue%29%2C+min%28%3FobservationValue%29%0D%0Awhere+%7B%0D%0A++graph+%3Fg+%7B%0D%0A++++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23sensor%3E+%3C"+encoded_uri+"%3E+.%0D%0A++++%3Fs+a+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23ObservationValue%3E+.%0D%0A++++%3Fs+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23endTime%3E+%3FobservationTime.%0D%0A++++%3Fs+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23hasValue%3E+%3FobservationValue+.%0D%0A++++BIND+%28bif%3Asubseq%28+str%28+%3FobservationTime+%29%2C0%2C11%29+AS+%3Fday%29+.%0D%0A++++FILTER+%28+xsd%3Adate%28%3FobservationTime%29+%3E+xsd%3Adate%28%22"+startdate+"%22%29+%26%26+xsd%3Adate%28%3FobservationTime%29+%3C%3D++xsd%3Adate%28%22"+enddate+"%22%29+%29++%0D%0A++%7D%0D%0A%7D%0D%0AGROUP+BY+%3Fday%0D%0AORDER+BY+%3Fday%0D%0A%0D%0A%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on";
+    var month_sparql = 
+    "select max(?day), avg(?observationValue), max(?observationValue), min(?observationValue)\n"+
+    "where {\n"+
+    "  graph ?g {\n"+
+    "    ?s <uri://opensheffield.org/properties#sensor> <"+uri+"> .\n"+
+    "    ?s a <http://purl.oclc.org/NET/ssnx/ssn#ObservationValue> .\n"+
+    "    ?s <http://purl.oclc.org/NET/ssnx/ssn#endTime> ?observationTime.\n"+
+    "    ?s <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?observationValue .\n"+
+    "    BIND (bif:subseq( str( ?observationTime ),0,11) AS ?day) .\n"+
+    "    FILTER ( xsd:date(?observationTime) > xsd:date(\""+startdate+"\") && xsd:date(?observationTime) <=  xsd:date(\""+enddate+"\") )  \n"+
+    "   }\n"+
+    "}\n"+
+    "GROUP BY ?day\n"+
+    "ORDER BY ?day\n";
+
+    console.log("Month sparql: %s",month_sparql);
+
+    var last_month = "http://apps.opensheffield.org/sparql?default-graph-uri=&query="+encodeURIComponent(month_sparql)
 
     console.log(last_month);
 
@@ -303,13 +326,17 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     // get yearly mean readings
 
     $scope.data = co;
-    $scope.$apply();
+    // $scope.$apply();
   }
+
+  $scope.displayPermit = function(uri, info) {
+    displayPermit(uri,info);
+  };
 
   function displayPermit(uri, info) {
     $scope.markerPartial = 'AirMap2/partial/AirMap2/Permit.html';
-    $scope.$apply();
     $scope.info = info;
+    $scope.$apply();
   }
 
   $scope.displayDiffusion = function(uri) {
@@ -401,7 +428,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     $scope.chartObject = co;
 
     $scope.markerPartial = 'AirMap2/partial/AirMap2/DiffisionTube.html';
-    // $scope.$apply();
+    $scope.$apply();
   }
 
   function clickAirMap2Marker(info) {
@@ -476,7 +503,8 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
         var f = new ol.Feature({geometry:p,
                                 type : 'RTMonitoring',
-                                uri : data.results.bindings[i].s.value});
+                                uri : data.results.bindings[i].s.value,
+                                label : data.results.bindings[i].id.value});
         
         f.setStyle(rtStyle);
         mkrs.addFeatures([f]);
