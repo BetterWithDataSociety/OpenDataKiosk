@@ -38,18 +38,6 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
   });
 
-  // See http://dev.openlayers.org/examples/feature-events.js for feature examples
-  // var style_map = new ol.StyleMap({
-  //   'default': ol.Util.applyDefaults(
-  //       {label: "${l}", pointRadius: 10},
-  //       ol.feature.Vector.style["default"]
-  //   ),
-  //   'select': ol.Util.applyDefaults(
-  //       {pointRadius: 10},
-  //       ol.feature.Vector.style.select
-  //   )
-  // });
-
   // https://www.iconfinder.com/icons/73051/azure_base_map_marker_nounproject_outside_icon#size=24
 
     var iconStyle = new ol.style.Style({
@@ -69,6 +57,11 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
       }))
     });
 
+    var rtStyle = new ol.style.Style({
+      image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+        src: '/img/monitoring.png'
+      }))
+    });
   
     var feature = new ol.Feature({ geometry: new ol.geom.Point(ol.proj.transform([-1.466944, 53.383611], 'EPSG:4326', 'EPSG:900913')), 
                                    name: 'Null Island', 
@@ -478,19 +471,15 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Flat+%3Flon+%3Fid+where+%7B%0D%0A++%3Fs+a+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23SensingDevice%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23sensorId%3E+%3Fid+.%0D%0A++FILTER%28NOT+EXISTS+%7B+%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+%7D+%29%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on").success( function(data) {
       for ( var i = 0; i < data.results.bindings.length; i++ ) {
-        // var p = new ol.geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
-        // markers.addFeatures([
-        //     new ol.feature.Vector(p, 
-        //                                   {
-        //                                     type : 'RTMonitoring',
-        //                                     uri : data.results.bindings[i].s.value
-        //                                   },
-        //                                   {externalGraphic: '/dist/bower_components/openlayers/img/marker-gold.png', 
-        //                                    graphicHeight: 25, 
-        //                                    graphicWidth: 21, 
-        //                                    graphicXOffset:-12, 
-        //                                    graphicYOffset:-25 }),
-        // ]);
+        var p = new ol.geom.Point(ol.proj.transform([parseFloat(data.results.bindings[i].lon.value), 
+                                                     parseFloat(data.results.bindings[i].lat.value)], 'EPSG:4326', 'EPSG:900913'));
+
+        var f = new ol.Feature({geometry:p,
+                                type : 'RTMonitoring',
+                                uri : data.results.bindings[i].s.value});
+        
+        f.setStyle(rtStyle);
+        mkrs.addFeatures([f]);
       }
     });
 
