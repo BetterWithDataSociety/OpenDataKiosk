@@ -312,6 +312,11 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     $scope.info = info;
   }
 
+  $scope.displayDiffusion = function(uri) {
+    console.log("scope dd");
+    displayDiffusion(uri);
+  };
+
   function displayDiffusion(uri) {
     // console.log(uri);
 
@@ -396,7 +401,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     $scope.chartObject = co;
 
     $scope.markerPartial = 'AirMap2/partial/AirMap2/DiffisionTube.html';
-    $scope.$apply();
+    // $scope.$apply();
   }
 
   function clickAirMap2Marker(info) {
