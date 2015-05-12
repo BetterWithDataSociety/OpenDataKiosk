@@ -1,11 +1,5 @@
 angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
-      // eventListeners: {
-      //   featureclick: function(e) {
-      //     console.log("Map says: " + e.feature.id + " clicked on " + e.feature.layer.name);
-      //     clickAirMap2Marker(e.feature.data);
-      //   }
-      // },
 
 
   var map = null;
@@ -22,16 +16,11 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
       })
   });
 
-  var layerListeners = {
-    featureclick: function(e) {
-        console.log(e.object.name + " says: " + e.feature.id + " clicked.");
-        return false;
-    },
-    nofeatureclick: function(e) {
-        console.log(e.object.name + " says: No feature clicked.");
-    }
-  };
-
+  map.on("click", function(e) {
+    map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
+        console.log("Feature: %o",feature);
+    });
+  });
 
   // See http://dev.openlayers.org/examples/feature-events.js for feature examples
   // var style_map = new ol.StyleMap({
@@ -53,7 +42,8 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
         // anchorXUnits: 'fraction',
         // anchorYUnits: 'pixels',
         // opacity: 0.75,
-        src: 'https://cdn1.iconfinder.com/data/icons/Map-Markers-Icons-Demo-PNG/24/Map-Marker-Marker-Outside-Azure.png'
+        // src: 'https://cdn1.iconfinder.com/data/icons/Map-Markers-Icons-Demo-PNG/24/Map-Marker-Marker-Outside-Azure.png'
+        src: '/img/tube_default.png'
       }))
     });
   
@@ -72,7 +62,6 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
     var marker_layer = new ol.layer.Vector({
       source: markers,
-      eventListeners: layerListeners
     });
   
     map.addLayer(marker_layer);
@@ -271,7 +260,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     console.log(last_month);
 
     $http.get(last_month).success( function(response) {
-      console.log("Month range Response for %s : %o",encoded_uri,response);
+      // console.log("Month range Response for %s : %o",encoded_uri,response);
       if ( response.results != null ) {
         if ( response.results.bindings != null ) {
           for ( var i=0; i<response.results.bindings.length; i++ ) {
@@ -405,7 +394,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
   }
 
   function update(map, mkrs) {
-    console.log("Calling update %o, %o",map,mkrs);
+    // console.log("Calling update %o, %o",map,mkrs);
 
     // Get diffusion tubes
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Fname+%3Flat+%3Flon%0D%0Awhere+%7B%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Fname+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0").success( function(data) {
@@ -415,7 +404,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
         var p = new ol.geom.Point(ol.proj.transform([parseFloat(data.results.bindings[i].lon.value), 
                                                      parseFloat(data.results.bindings[i].lat.value)], 'EPSG:4326', 'EPSG:900913'));
-        console.log("adding point %o %o",p,data.results.bindings[i]);
+        // console.log("adding point %o %o",p,data.results.bindings[i]);
 
         var f = new ol.Feature({geometry:p,
                                 name:'g',
@@ -425,7 +414,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
         f.setStyle(iconStyle);
         mkrs.addFeatures([f]);
-        console.log("Added %o",p);
+        // console.log("Added %o",p);
       }
       map.render();
       map.renderSync();
