@@ -17,9 +17,12 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
   });
 
   map.on("click", function(e) {
+    var c = 0;
     map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
-        console.log("Feature: %o",feature);
+        console.log("Feature: %d %o",c++,feature);
+        clickAirMap2Marker(feature);
     });
+    console.log("Got %d features",c);
   });
 
   // See http://dev.openlayers.org/examples/feature-events.js for feature examples
@@ -378,7 +381,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
   }
 
   function clickAirMap2Marker(info) {
-    console.log("%o",info);
+    console.log("Clicked : %o",info);
     if ( info.type === 'Diffusion' ) {
       displayDiffusion(info.uri);
     }
