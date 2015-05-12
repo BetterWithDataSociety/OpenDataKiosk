@@ -62,6 +62,13 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
         src: '/img/tube_default.png'
       }))
     });
+
+    var permitStyle = new ol.style.Style({
+      image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+        src: '/img/permit.png'
+      }))
+    });
+
   
     var feature = new ol.Feature({ geometry: new ol.geom.Point(ol.proj.transform([-1.466944, 53.383611], 'EPSG:4326', 'EPSG:900913')), 
                                    name: 'Null Island', 
@@ -427,11 +434,8 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Fname+%3Flat+%3Flon%0D%0Awhere+%7B%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Fname+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0").success( function(data) {
       // console.log("update 2 "+data.results.bindings.length);
       for ( var i = 0; i < data.results.bindings.length; i++ ) {   
-        // var p = new ol.geom.Point(ol.proj.transform([data.results.bindings[i].lon.value, data.results.bindings[i].lat.value], 'EPSG:4326', 'EPSG:900913'));
-
         var p = new ol.geom.Point(ol.proj.transform([parseFloat(data.results.bindings[i].lon.value), 
                                                      parseFloat(data.results.bindings[i].lat.value)], 'EPSG:4326', 'EPSG:900913'));
-        // console.log("adding point %o %o",p,data.results.bindings[i]);
 
         var f = new ol.Feature({geometry:p,
                                 name:data.results.bindings[i].name.value,
@@ -443,33 +447,30 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
         mkrs.addFeatures([f]);
         // console.log("Added %o",p);
       }
-      map.render();
-      map.renderSync();
+      // map.render();
+      // map.renderSync();
     });
 
     // Get permits
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Flat+%3Flon+%3Flabel+%3FaddrLabel+%3FdocUrl+%3Ftype+%3Fsection%0D%0Awhere+%7B+%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23industrialPermit%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Flabel+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitAddressLabel%3E+%3FaddrLabel+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitDocumentURI%3E+%3FdocUrl+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitType%3E+%3Ftype+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitSection%3E+%3Fsection+.%0D%0A%7D%0D%0Aorder+by+%3Fs&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on").success( function(data) {
       for ( var i = 0; i < data.results.bindings.length; i++ ) {   
-        // var p = new ol.geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
-        // markers.addFeatures([
-        //     new ol.feature.Vector(p, 
-        //                                   {
-        //                                     type : 'Permit',
-        //                                     uri : data.results.bindings[i].s.value,
-        //                                     lat : data.results.bindings[i].lat.value,
-        //                                     lon : data.results.bindings[i].lon.value,
-        //                                     label : data.results.bindings[i].label.value,
-        //                                     addrLabel : data.results.bindings[i].addrLabel.value,
-        //                                     docUrl : data.results.bindings[i].docUrl.value,
-        //                                     permitType : data.results.bindings[i].type.value,
-        //                                     section : data.results.bindings[i].section.value,
-        //                                   },
-        //                                   {externalGraphic: '/dist/bower_components/openlayers/img/marker-green.png', 
-        //                                    graphicHeight: 25, 
-        //                                    graphicWidth: 21, 
-        //                                    graphicXOffset:-12, 
-        //                                    graphicYOffset:-25 }),
-        // ]);
+
+        var p = new ol.geom.Point(ol.proj.transform([parseFloat(data.results.bindings[i].lon.value), 
+                                                     parseFloat(data.results.bindings[i].lat.value)], 'EPSG:4326', 'EPSG:900913'));
+
+        var f = new ol.Feature({geometry:p,
+                                type : 'Permit',
+                                uri : data.results.bindings[i].s.value,
+                                name: data.results.bindings[i].label.value,
+                                label : data.results.bindings[i].label.value,
+                                addrLabel : data.results.bindings[i].addrLabel.value,
+                                docUrl : data.results.bindings[i].docUrl.value,
+                                permitType : data.results.bindings[i].type.value,
+                                section : data.results.bindings[i].section.value
+                           });
+
+        f.setStyle(permitStyle);
+        mkrs.addFeatures([f]);
       }
     });
 
