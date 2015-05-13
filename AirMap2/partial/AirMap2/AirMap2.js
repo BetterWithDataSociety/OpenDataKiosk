@@ -300,7 +300,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
     console.log("Month sparql: %s",month_sparql);
 
-    var last_month = "http://apps.opensheffield.org/sparql?default-graph-uri=&query="+encodeURIComponent(month_sparql)
+    var last_month = "http://apps.opensheffield.org/sparql?default-graph-uri=&query="+encodeURIComponent(month_sparql);
 
     console.log(last_month);
 
