@@ -1,6 +1,17 @@
-angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http, $routeParams){
+angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http, $routeParams, $route, $location){
 
   console.log("%o",$routeParams);
+
+  $scope.safeApply = function(fn) {
+    var phase = this.$root.$$phase;
+    if(phase === '$apply' || phase === '$digest') {
+      if(fn && (typeof(fn) === 'function')) {
+        fn();
+      }
+    } else {
+      this.$apply(fn);
+    }
+  };
 
   var map = null;
   map = new ol.Map( { 
@@ -28,9 +39,12 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http, $rout
 
     if ( c === 0 ) {
       displayNotSelected();
+      $location.search('sensor', null);
     }
     else if ( c === 1 ) {
       clickAirMap2Marker(fl[0].values_);
+      console.log("update route");
+      $location.path('/AirMap2/ddddhhhhhgggg');
     }
     else {
       displaySelectMultiple(fl);
@@ -90,12 +104,16 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http, $rout
   function displaySelectMultiple(fl) {
     $scope.markerPartial = 'AirMap2/partial/AirMap2/selectMultiple.html';
     $scope.fl = fl;
-    $scope.$apply();
+    // $scope.safeApply()( function() {
+      $scope.$apply();
+    // });
   }
 
   function displayNotSelected() {
     $scope.markerPartial = 'AirMap2/partial/AirMap2/noSelection.html';
-    $scope.$apply();
+    // $scope.safeApply()( function() {
+      $scope.$apply();
+    // });
   }
 
   $scope.displayRTMonitoring = function(uri,info) {
@@ -326,6 +344,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http, $rout
     // get yearly mean readings
 
     $scope.data = co;
+    $location.path('/AirMap2/sooooooohhhh');
     // $scope.$apply();
   }
 
@@ -336,7 +355,9 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http, $rout
   function displayPermit(uri, info) {
     $scope.markerPartial = 'AirMap2/partial/AirMap2/Permit.html';
     $scope.info = info;
-    $scope.$apply();
+    // safeApply( function() {
+      $scope.$apply();
+    // });
   }
 
   $scope.displayDiffusion = function(uri) {
@@ -428,7 +449,9 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http, $rout
     $scope.chartObject = co;
 
     $scope.markerPartial = 'AirMap2/partial/AirMap2/DiffisionTube.html';
-    $scope.$apply();
+    // safeApply( function() {
+      $scope.$apply();
+    // });
   }
 
   function clickAirMap2Marker(info) {
