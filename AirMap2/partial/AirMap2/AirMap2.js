@@ -1,71 +1,110 @@
 angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
 
+
+
   var map = null;
-  map = new OpenLayers.Map( { 
-      div : "map-canvas2",
-      eventListeners: {
-        featureclick: function(e) {
-          console.log("Map says: " + e.feature.id + " clicked on " + e.feature.layer.name);
-          clickAirMap2Marker(e.feature.data);
-        }
-      }
+  map = new ol.Map( { 
+      target: 'map-canvas2',
+      layers : [
+        new ol.layer.Tile({
+          source: new ol.source.OSM()
+        })
+      ],
+      view: new ol.View({
+        center: ol.proj.transform([-1.466944, 53.383611], 'EPSG:4326', 'EPSG:900913'),
+        zoom: 12
+      })
   });
 
-  var layerListeners = {
-    featureclick: function(e) {
-        console.log(e.object.name + " says: " + e.feature.id + " clicked.");
-        return false;
-    },
-    nofeatureclick: function(e) {
-        console.log(e.object.name + " says: No feature clicked.");
+  map.on("click", function(e) {
+    var c = 0;
+    var fl = [];
+    map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
+      console.log("Feature: %d %o",c++,feature);
+      fl.push(feature);
+    });
+
+    console.log("Got %d features",c);
+
+    if ( c === 0 ) {
+      displayNotSelected();
     }
-  };
+    else if ( c === 1 ) {
+      clickAirMap2Marker(fl[0].values_);
+    }
+    else {
+      displaySelectMultiple(fl);
+    }
 
-
-  // See http://dev.openlayers.org/examples/feature-events.js for feature examples
-  var style_map = new OpenLayers.StyleMap({
-    'default': OpenLayers.Util.applyDefaults(
-        {label: "${l}", pointRadius: 10},
-        OpenLayers.Feature.Vector.style["default"]
-    ),
-    'select': OpenLayers.Util.applyDefaults(
-        {pointRadius: 10},
-        OpenLayers.Feature.Vector.style.select
-    )
   });
 
-  map.addLayer(new OpenLayers.Layer.OSM());
-  // map.zoomToMaxExtent();
-  var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
-  var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
-  var position = new OpenLayers.LonLat(-1.466944, 53.383611).transform( fromProjection, toProjection);
-  var zoom           = 12; 
-  map.setCenter(position, zoom );
+  // https://www.iconfinder.com/icons/73051/azure_base_map_marker_nounproject_outside_icon#size=24
 
+    var iconStyle = new ol.style.Style({
+      image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+        // anchor: [0.5, 46],
+        // anchorXUnits: 'fraction',
+        // anchorYUnits: 'pixels',
+        // opacity: 0.75,
+        // src: 'https://cdn1.iconfinder.com/data/icons/Map-Markers-Icons-Demo-PNG/24/Map-Marker-Marker-Outside-Azure.png'
+        src: '/img/tube_default.png'
+      }))
+    });
 
-  var markers = new OpenLayers.Layer.Vector("Markers", {
-    // Can't get this working L:( strategies : [ new OpenLayers.Strategy.Cluster({threshold: 50}) ],
-    styleMap: style_map,
-     eventListeners: layerListeners
-  });
+    var permitStyle = new ol.style.Style({
+      image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+        src: '/img/permit.png'
+      }))
+    });
 
-  map.addLayer(markers);
+    var rtStyle = new ol.style.Style({
+      image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+        src: '/img/monitoring.png'
+      }))
+    });
+  
+    var feature = new ol.Feature({ geometry: new ol.geom.Point(ol.proj.transform([-1.466944, 53.383611], 'EPSG:4326', 'EPSG:900913')), 
+                                   name: 'Null Island', 
+                                   population: 4000, 
+                                   rainfall: 500,
+                                   });
+    feature.setStyle(iconStyle);
+  
+      var markers = new ol.source.Vector({
+      features: [
+        feature
+        ]
+    });
 
-  var size = new OpenLayers.Size(21,25);
-  var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
-  var marker = new OpenLayers.Icon('/dist/bower_components/openlayers/img/marker.svg', size, offset);
-  var diffusion_marker = new OpenLayers.Icon('/dist/bower_components/openlayers/img/marker-blue.png', size, offset);
-  var realtime_marker = new OpenLayers.Icon('/dist/bower_components/openlayers/img/marker-gold.png', size, offset);
-  var permit_marker = new OpenLayers.Icon('/dist/bower_components/openlayers/img/marker-green.png', size, offset);
+    var marker_layer = new ol.layer.Vector({
+      source: markers,
+    });
+  
+    map.addLayer(marker_layer);
+  
+    var zoomslider = new ol.control.ZoomSlider();
+    map.addControl(zoomslider);
 
   $scope.markerPartial = 'AirMap2/partial/AirMap2/noSelection.html';
+
+  function displaySelectMultiple(fl) {
+    $scope.markerPartial = 'AirMap2/partial/AirMap2/selectMultiple.html';
+    $scope.fl = fl;
+    $scope.$apply();
+  }
 
   function displayNotSelected() {
     $scope.markerPartial = 'AirMap2/partial/AirMap2/noSelection.html';
     $scope.$apply();
   }
 
+  $scope.displayRTMonitoring = function(uri,info) {
+    displayRTMonitoring(uri,info);
+  };
+
   function displayRTMonitoring(uri, info) {
+    console.log("displayRTMonitoring(%o,%o)",uri,info);
+
     $scope.markerPartial = 'AirMap2/partial/AirMap2/RTMonitoring.html';
     $scope.uri = uri;
     $scope.info = info;
@@ -244,12 +283,29 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     d.setDate(d.getDate() - 30);
     startdate = d.getFullYear() + '-' + ('0' + (d.getMonth()+1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
 
-    var last_month = "http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+max%28%3Fday%29%2C+avg%28%3FobservationValue%29%2C+max%28%3FobservationValue%29%2C+min%28%3FobservationValue%29%0D%0Awhere+%7B%0D%0A++graph+%3Fg+%7B%0D%0A++++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23sensor%3E+%3C"+encoded_uri+"%3E+.%0D%0A++++%3Fs+a+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23ObservationValue%3E+.%0D%0A++++%3Fs+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23endTime%3E+%3FobservationTime.%0D%0A++++%3Fs+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23hasValue%3E+%3FobservationValue+.%0D%0A++++BIND+%28bif%3Asubseq%28+str%28+%3FobservationTime+%29%2C0%2C11%29+AS+%3Fday%29+.%0D%0A++++FILTER+%28+xsd%3Adate%28%3FobservationTime%29+%3E+xsd%3Adate%28%22"+startdate+"%22%29+%26%26+xsd%3Adate%28%3FobservationTime%29+%3C%3D++xsd%3Adate%28%22"+enddate+"%22%29+%29++%0D%0A++%7D%0D%0A%7D%0D%0AGROUP+BY+%3Fday%0D%0AORDER+BY+%3Fday%0D%0A%0D%0A%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on";
+    var month_sparql = 
+    "select max(?day), avg(?observationValue), max(?observationValue), min(?observationValue)\n"+
+    "where {\n"+
+    "  graph ?g {\n"+
+    "    ?s <uri://opensheffield.org/properties#sensor> <"+uri+"> .\n"+
+    "    ?s a <http://purl.oclc.org/NET/ssnx/ssn#ObservationValue> .\n"+
+    "    ?s <http://purl.oclc.org/NET/ssnx/ssn#endTime> ?observationTime.\n"+
+    "    ?s <http://purl.oclc.org/NET/ssnx/ssn#hasValue> ?observationValue .\n"+
+    "    BIND (bif:subseq( str( ?observationTime ),0,11) AS ?day) .\n"+
+    "    FILTER ( xsd:date(?observationTime) > xsd:date(\""+startdate+"\") && xsd:date(?observationTime) <=  xsd:date(\""+enddate+"\") )  \n"+
+    "   }\n"+
+    "}\n"+
+    "GROUP BY ?day\n"+
+    "ORDER BY ?day\n";
+
+    console.log("Month sparql: %s",month_sparql);
+
+    var last_month = "http://apps.opensheffield.org/sparql?default-graph-uri=&query="+encodeURIComponent(month_sparql)
 
     console.log(last_month);
 
     $http.get(last_month).success( function(response) {
-      console.log("Month range Response for %s : %o",encoded_uri,response);
+      // console.log("Month range Response for %s : %o",encoded_uri,response);
       if ( response.results != null ) {
         if ( response.results.bindings != null ) {
           for ( var i=0; i<response.results.bindings.length; i++ ) {
@@ -270,14 +326,23 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     // get yearly mean readings
 
     $scope.data = co;
-    $scope.$apply();
+    // $scope.$apply();
   }
+
+  $scope.displayPermit = function(uri, info) {
+    displayPermit(uri,info);
+  };
 
   function displayPermit(uri, info) {
     $scope.markerPartial = 'AirMap2/partial/AirMap2/Permit.html';
-    $scope.$apply();
     $scope.info = info;
+    $scope.$apply();
   }
+
+  $scope.displayDiffusion = function(uri) {
+    console.log("scope dd");
+    displayDiffusion(uri);
+  };
 
   function displayDiffusion(uri) {
     // console.log(uri);
@@ -367,7 +432,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
   }
 
   function clickAirMap2Marker(info) {
-    console.log("%o",info);
+    console.log("Clicked : %o",info);
     if ( info.type === 'Diffusion' ) {
       displayDiffusion(info.uri);
     }
@@ -382,54 +447,50 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     }
   }
 
-  function update(map) {
+  function update(map, mkrs) {
+    // console.log("Calling update %o, %o",map,mkrs);
 
     // Get diffusion tubes
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Fname+%3Flat+%3Flon%0D%0Awhere+%7B%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Fname+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0").success( function(data) {
       // console.log("update 2 "+data.results.bindings.length);
       for ( var i = 0; i < data.results.bindings.length; i++ ) {   
-        var p = new OpenLayers.Geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
+        var p = new ol.geom.Point(ol.proj.transform([parseFloat(data.results.bindings[i].lon.value), 
+                                                     parseFloat(data.results.bindings[i].lat.value)], 'EPSG:4326', 'EPSG:900913'));
 
-        markers.addFeatures([
-            new OpenLayers.Feature.Vector(p, 
-                                          {
-                                            type : 'Diffusion',
-                                            uri : data.results.bindings[i].s.value,
-                                          },
-                                          {externalGraphic: '/dist/bower_components/openlayers/img/marker-blue.png', 
-                                           graphicHeight: 25, 
-                                           graphicWidth: 21, 
-                                           graphicXOffset:-12, 
-                                           graphicYOffset:-25 }),
-        ]);
+        var f = new ol.Feature({geometry:p,
+                                name:data.results.bindings[i].name.value,
+                                type : 'Diffusion',
+                                uri : data.results.bindings[i].s.value
+                           });
 
-
+        f.setStyle(iconStyle);
+        mkrs.addFeatures([f]);
+        // console.log("Added %o",p);
       }
+      // map.render();
+      // map.renderSync();
     });
 
     // Get permits
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Flat+%3Flon+%3Flabel+%3FaddrLabel+%3FdocUrl+%3Ftype+%3Fsection%0D%0Awhere+%7B+%0D%0A++%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23industrialPermit%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23label%3E+%3Flabel+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitAddressLabel%3E+%3FaddrLabel+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitDocumentURI%3E+%3FdocUrl+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitType%3E+%3Ftype+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23permitSection%3E+%3Fsection+.%0D%0A%7D%0D%0Aorder+by+%3Fs&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on").success( function(data) {
       for ( var i = 0; i < data.results.bindings.length; i++ ) {   
-        var p = new OpenLayers.Geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
-        markers.addFeatures([
-            new OpenLayers.Feature.Vector(p, 
-                                          {
-                                            type : 'Permit',
-                                            uri : data.results.bindings[i].s.value,
-                                            lat : data.results.bindings[i].lat.value,
-                                            lon : data.results.bindings[i].lon.value,
-                                            label : data.results.bindings[i].label.value,
-                                            addrLabel : data.results.bindings[i].addrLabel.value,
-                                            docUrl : data.results.bindings[i].docUrl.value,
-                                            permitType : data.results.bindings[i].type.value,
-                                            section : data.results.bindings[i].section.value,
-                                          },
-                                          {externalGraphic: '/dist/bower_components/openlayers/img/marker-green.png', 
-                                           graphicHeight: 25, 
-                                           graphicWidth: 21, 
-                                           graphicXOffset:-12, 
-                                           graphicYOffset:-25 }),
-        ]);
+
+        var p = new ol.geom.Point(ol.proj.transform([parseFloat(data.results.bindings[i].lon.value), 
+                                                     parseFloat(data.results.bindings[i].lat.value)], 'EPSG:4326', 'EPSG:900913'));
+
+        var f = new ol.Feature({geometry:p,
+                                type : 'Permit',
+                                uri : data.results.bindings[i].s.value,
+                                name: data.results.bindings[i].label.value,
+                                label : data.results.bindings[i].label.value,
+                                addrLabel : data.results.bindings[i].addrLabel.value,
+                                docUrl : data.results.bindings[i].docUrl.value,
+                                permitType : data.results.bindings[i].type.value,
+                                section : data.results.bindings[i].section.value
+                           });
+
+        f.setStyle(permitStyle);
+        mkrs.addFeatures([f]);
       }
     });
 
@@ -437,24 +498,22 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
     
     $http.get("http://apps.opensheffield.org/sparql?default-graph-uri=&query=select+%3Fs+%3Flat+%3Flon+%3Fid+where+%7B%0D%0A++%3Fs+a+%3Chttp%3A%2F%2Fpurl.oclc.org%2FNET%2Fssnx%2Fssn%23SensingDevice%3E+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23lat%3E+%3Flat+.%0D%0A++%3Fs+%3Chttp%3A%2F%2Fwww.w3.org%2F2003%2F01%2Fgeo%2Fwgs84_pos%23long%3E+%3Flon+.%0D%0A++%3Fs+%3Curi%3A%2F%2Fopensheffield.org%2Fproperties%23sensorId%3E+%3Fid+.%0D%0A++FILTER%28NOT+EXISTS+%7B+%3Fs+a+%3Curi%3A%2F%2Fopensheffield.org%2Ftypes%23diffusionTube%3E+%7D+%29%0D%0A%7D%0D%0A&format=application%2Fsparql-results%2Bjson&timeout=0&debug=on").success( function(data) {
       for ( var i = 0; i < data.results.bindings.length; i++ ) {
-        var p = new OpenLayers.Geometry.Point(data.results.bindings[i].lon.value, data.results.bindings[i].lat.value).transform( fromProjection, toProjection);
-        markers.addFeatures([
-            new OpenLayers.Feature.Vector(p, 
-                                          {
-                                            type : 'RTMonitoring',
-                                            uri : data.results.bindings[i].s.value
-                                          },
-                                          {externalGraphic: '/dist/bower_components/openlayers/img/marker-gold.png', 
-                                           graphicHeight: 25, 
-                                           graphicWidth: 21, 
-                                           graphicXOffset:-12, 
-                                           graphicYOffset:-25 }),
-        ]);
+        var p = new ol.geom.Point(ol.proj.transform([parseFloat(data.results.bindings[i].lon.value), 
+                                                     parseFloat(data.results.bindings[i].lat.value)], 'EPSG:4326', 'EPSG:900913'));
+
+        var f = new ol.Feature({geometry:p,
+                                type : 'RTMonitoring',
+                                uri : data.results.bindings[i].s.value,
+                                label : data.results.bindings[i].id.value});
+        
+        f.setStyle(rtStyle);
+        mkrs.addFeatures([f]);
       }
     });
 
+
   }
 
-  update(map);
+  update(map, markers);
 
 });
