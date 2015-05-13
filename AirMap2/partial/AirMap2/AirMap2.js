@@ -344,7 +344,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http, $rout
     // get yearly mean readings
 
     $scope.data = co;
-    $location.path('/AirMap2/sooooooohhhh');
+    $location.search({sensor:'ddsdfdsddfdfdfsfdsfsdf'});
     // $scope.$apply();
   }
 
