@@ -1,6 +1,6 @@
-angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http){
+angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http, $routeParams){
 
-
+  console.log("%o",$routeParams);
 
   var map = null;
   map = new ol.Map( { 
