@@ -61,7 +61,7 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http, $rout
         // anchorYUnits: 'pixels',
         // opacity: 0.75,
         // src: 'https://cdn1.iconfinder.com/data/icons/Map-Markers-Icons-Demo-PNG/24/Map-Marker-Marker-Outside-Azure.png'
-        src: '/img/tube_default.png'
+        src: '/odk/img/tube_default.png'
       }))
     });
 
