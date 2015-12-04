@@ -43,8 +43,8 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http, $rout
     }
     else if ( c === 1 ) {
       clickAirMap2Marker(fl[0].values_);
-      console.log("update route");
-      $location.path('/AirMap2/ddddhhhhhgggg');
+      // console.log("update route");
+      // $location.path('/AirMap2/ddddhhhhhgggg');
     }
     else {
       displaySelectMultiple(fl);
@@ -67,13 +67,13 @@ angular.module('AirMap2').controller('Airmap2Ctrl',function($scope, $http, $rout
 
     var permitStyle = new ol.style.Style({
       image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-        src: '/img/permit.png'
+        src: '/odk/img/permit.png'
       }))
     });
 
     var rtStyle = new ol.style.Style({
       image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-        src: '/img/monitoring.png'
+        src: '/odk/img/monitoring.png'
       }))
     });
   
