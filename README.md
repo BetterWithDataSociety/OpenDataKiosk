@@ -1,4 +1,20 @@
 
+
+Mounting on apache2
+
+       Alias /odk/ /home/../OpenDataKiosk/
+
+        <Directory /home/.../OpenDataKiosk/>
+          Order allow,deny
+          Allow from all
+
+          RewriteEngine on
+
+          Require local
+
+
+
+
 # open-data-kiosk
 
 This project is generated with [yo angular generator](https://github.com/yeoman/generator-angular)
